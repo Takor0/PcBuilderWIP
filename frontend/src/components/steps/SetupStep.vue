@@ -1,6 +1,7 @@
 <script lang="ts">
 import budget from "@/components/steps/budget.vue";
 import appliance from "@/components/steps/appliance.vue";
+import requirements from "@/components/steps/requirements.vue";
 
 export default {
   props: {
@@ -15,7 +16,9 @@ export default {
         case "budget":
           return budget;
         case "appliance":
-          return appliance;
+          return appliance
+        case "requirements":
+          return requirements
       }
     }
 
