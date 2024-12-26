@@ -1,60 +1,89 @@
-<script setup lang="ts">
+<script lang="ts">
 
 import Stepper from 'primevue/stepper';
 import StepList from 'primevue/steplist';
 import StepPanels from 'primevue/steppanels';
-import StepItem from 'primevue/stepitem';
 import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
+import Button from 'primevue/button'
+import SetupStep from '@/components/SetupStep.vue'
+
+export default {
+  name: 'SetupView',
+  components: {
+    Stepper,
+    StepList,
+    StepPanels,
+    Step,
+    StepPanel,
+    Button,
+    SetupStep,
+  },
+  data() {
+    return {
+      steps: [
+        {label: 'Budżet', value: 1, title: 'budget'},
+        {label: 'Zastosowanie', value: 2, title: 'appliance'},
+        {label: 'Wymagania', value: 3, title: 'requirements'},
+        {label: 'Preferencje', value: 4, title: 'preferences'},
+        {label: 'Zestawy', value: 5, title: 'sets'},
+      ]
+    }
+  },
+  methods: {
+    isPreviousStep(stepValue: number) {
+      return stepValue > 1;
+    },
+    isNextStep(stepValue: number) {
+      return stepValue < this.steps.length;
+    }
+  }
+}
 
 </script>
 
 
 <template>
-  <div class="card flex justify-center">
-    <Stepper value="1" class="basis-[50rem]">
+  <div>
+    <Stepper :value="1">
       <StepList>
-        <Step value="1">Budżet</Step>
-        <Step value="2">Zastosowanie</Step>
-        <Step value="3">Wymagania</Step>
-        <Step value="4">Preferencje</Step>
-        <Step value="5">Zestawy</Step>
+        <Step v-for="step in steps" :key="step.value" :value="step.value">{{ step.label }}</Step>
       </StepList>
       <StepPanels>
-        <StepPanel v-slot="{ activateCallback }" value="1">
-          <div class="flex flex-col h-48">
-            <div
-              class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-              Content I
+        <template v-for="step in steps" :key="step.value">
+          <StepPanel
+            v-slot="{ activateCallback }"
+            :value="step.value"
+          >
+            <div class="flex align-items-center gap-2 justify-content-between">
+              <Button
+                v-if="isPreviousStep(step.value)"
+                label="Wstecz"
+                icon="pi pi-arrow-left"
+                iconPos="left"
+                @click="activateCallback(step.value-1)"
+              />
+              <span style="width: 100px" v-else/>
+              <div>
+                {{ step.label }}
+              </div>
+              <Button
+                v-if="isNextStep(step.value)"
+                label="Dalej"
+                icon="pi pi-arrow-right"
+                iconPos="right"
+                @click="activateCallback(step.value+1)"
+              />
+              <span style="width: 100px" v-else/>
             </div>
-          </div>
-          <div class="flex pt-6 justify-end">
-            <Button label="Next" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('2')"/>
-          </div>
-        </StepPanel>
-        <StepPanel v-slot="{ activateCallback }" value="2">
-          <div class="flex flex-col h-48">
-            <div
-              class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-              Content II
-            </div>
-          </div>
-          <div class="flex pt-6 justify-between">
-            <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('1')"/>
-            <Button label="Next" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')"/>
-          </div>
-        </StepPanel>
-        <StepPanel v-slot="{ activateCallback }" value="3">
-          <div class="flex flex-col h-48">
-            <div
-              class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium">
-              Content III
-            </div>
-          </div>
-          <div class="pt-6">
-            <Button label="Back" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('2')"/>
-          </div>
-        </StepPanel>
+          </StepPanel>
+          <StepPanel
+            :value="step.value"
+            class="mt-2"
+          >
+            <SetupStep :title="step.title"/>
+          </StepPanel>
+        </template>
       </StepPanels>
     </Stepper>
   </div>
