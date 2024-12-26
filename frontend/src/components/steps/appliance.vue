@@ -11,7 +11,7 @@
         </p>
       </template>
       <template #footer>
-        <Button size="small" severity="secondary" outlined>
+        <Button @click="handleSelect(appliance.name)" size="small" severity="secondary" outlined>
           Wybierz
         </Button>
       </template>
@@ -45,8 +45,12 @@ export default {
       content: null,
     }
   },
-  mounted() {
-
-  }
+  methods: {
+    handleSelect(name) {
+      this.content = name
+      this.setupStore.storeStepResult(this.title, name)
+      this.nextStep()
+    }
+  },
 }
 </script>

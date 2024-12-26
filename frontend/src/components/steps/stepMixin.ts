@@ -1,6 +1,7 @@
 import { useSetupStore } from '@/stores/setup'
 
 export default {
+    emits: ['next'],
     data() {
         return {
             setupStore: null as any,
@@ -12,8 +13,8 @@ export default {
         this.setupStore = useSetupStore()
     },
     methods: {
-        storeResult() {
-            this.setupStore.storeStepResult(this.title, this.content)
-        },
+        nextStep() {
+            this.$emit('next')
+        }
     }
 }
