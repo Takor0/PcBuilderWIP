@@ -25,7 +25,7 @@ export default {
         {label: 'Budżet', value: 1, title: 'budget'},
         {label: 'Zastosowanie', value: 2, title: 'appliance'},
         {label: 'Wymagania', value: 3, title: 'requirements'},
-        {label: 'Preferencje', value: 4, title: 'preferences'},
+        {label: 'Preferencje', value: 4, title: 'preference'},
         {label: 'Zestawy', value: 5, title: 'sets'},
       ]
     }
