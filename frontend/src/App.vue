@@ -19,6 +19,7 @@ export default defineComponent({
 <template>
   <RouterView/>
   <ToggleSwitch class="theme-switch" :modelValue="isDarkMode" @click="setMode(!isDarkMode)"/>
+  <br>
 </template>
 <style lang="scss">
 .theme-switch {
