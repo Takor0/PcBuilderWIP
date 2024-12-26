@@ -6,7 +6,7 @@ import StepPanels from 'primevue/steppanels';
 import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import Button from 'primevue/button'
-import SetupStep from '@/components/SetupStep.vue'
+import SetupStep from '@/components/steps/SetupStep.vue'
 
 export default {
   name: 'SetupView',
