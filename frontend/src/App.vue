@@ -21,6 +21,8 @@ export default defineComponent({
   <ToggleSwitch class="theme-switch" :modelValue="isDarkMode" @click="setMode(!isDarkMode)"/>
 </template>
 <style lang="scss">
+@import "styles";
+
 .theme-switch {
   position: absolute;
   right: 0;
