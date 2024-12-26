@@ -24,7 +24,9 @@ export default defineComponent({
 @import "styles";
 
 .theme-switch {
-  position: absolute;
-  right: 0;
+  position: fixed !important;
+  bottom: 10px !important;
+  right: 10px !important;
+
 }
 </style>
