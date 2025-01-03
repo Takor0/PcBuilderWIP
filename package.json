@@ -1,0 +1,17 @@
+{
+  "name": "pcbuilder",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start:dev": "docker-compose up",
+    "start:dev:build": "docker-compose up --build",
+    "stop:dev": "docker-compose down",
+    "clean": "docker-compose down -v",
+    "frontend": "cd frontend && yarn dev",
+    "backend": "cd backend && ./mvnw spring-boot:run",
+    "dev": "concurrently \"yarn backend\" \"yarn frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

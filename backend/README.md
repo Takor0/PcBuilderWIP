@@ -23,4 +23,4 @@ mvn clean install
 mvn spring-boot:run
 ```
 
-Aplikacja będzie dostępna pod adresem: `http://localhost:8080` 
+Backend dostępny pod adresem: `http://localhost:8080` 
