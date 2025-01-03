@@ -2,21 +2,17 @@ package pl.pjatk.pcBuilder.user.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UserRepository userRepository;
-
-    @Autowired
-    public AuthService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User registerUser(User user) {
         logger.info("Próba rejestracji użytkownika: {}", user.getUsername());
