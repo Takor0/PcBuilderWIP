@@ -31,11 +31,12 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         try {
             User registeredUser = authService.registerUser(user);
+            registeredUser.setPassword(null);
             return ResponseEntity.ok(registeredUser);
         } catch (RuntimeException e) {
             return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(e.getMessage());
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 
@@ -43,23 +44,25 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable String username) {
         try {
             User user = authService.findByUsername(username);
+            user.setPassword(null);
             return ResponseEntity.ok(user);
         } catch (RuntimeException e) {
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
-    
+
     @PutMapping("/{userId}/verify")
     public ResponseEntity<?> verifyUser(@PathVariable Long userId) {
         try {
             User verifiedUser = authService.verifyUser(userId);
+            verifiedUser.setPassword(null);
             return ResponseEntity.ok(verifiedUser);
         } catch (RuntimeException e) {
             return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(e.getMessage());
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
-} 
+}
