@@ -62,4 +62,32 @@ public class AuthService {
         logger.info("Użytkownik o ID {} został zweryfikowany", userId);
         return verifiedUser;
     }
+
+    public User loginUser(String usernameOrEmail, String rawPassword) {
+        logger.info("Próba logowania użytkownika: {}", usernameOrEmail);
+        
+        User user = userRepository.findByUsername(usernameOrEmail);
+        if (user == null) {
+            user = userRepository.findByEmail(usernameOrEmail);
+        }
+
+        if (user == null) {
+            logger.warn("Nieprawidłowe dane logowania dla: {}", usernameOrEmail);
+            throw new RuntimeException("Nieprawidłowe dane logowania");
+        }
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            logger.warn("Nieprawidłowe hasło dla użytkownika: {}", usernameOrEmail);
+            throw new RuntimeException("Nieprawidłowe dane logowania");
+        }
+
+        if (!user.getIsVerified()) {
+            logger.warn("Użytkownik {} nie został zweryfikowany", usernameOrEmail);
+            throw new RuntimeException("Użytkownik nie został jeszcze zweryfikowany.");
+        }
+
+        logger.info("Użytkownik {} zalogował się pomyślnie", usernameOrEmail);
+        return user;
+    }
+
 }
