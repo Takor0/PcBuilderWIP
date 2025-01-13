@@ -78,10 +78,11 @@ export default {
             </div>
           </StepPanel>
           <StepPanel
+            v-slot="{ activateCallback }"
             :value="step.value"
             class="mt-2"
           >
-            <SetupStep :title="step.title"/>
+            <SetupStep @next="activateCallback(step.value+1)" :title="step.title"/>
           </StepPanel>
         </template>
       </StepPanels>
