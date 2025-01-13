@@ -1,4 +1,7 @@
-# Logs
+# Environment variables
+.env
+
+# Frontend
 frontend/logs
 frontend/*.log
 frontend/npm-debug.log*
@@ -6,18 +9,13 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 frontend/lerna-debug.log*
-
 frontend/node_modules
-frontend/.DS_Store
 frontend/dist
 frontend/dist-ssr
 frontend/coverage
 frontend/*.local
-
 frontend/cypress/videos/
 frontend/cypress/screenshots/
-
-# Editor directories and files
 frontend/.vscode/*
 frontend/!.vscode/extensions.json
 frontend/.idea
@@ -26,16 +24,16 @@ frontend/*.ntvs*
 frontend/*.njsproj
 frontend/*.sln
 frontend/*.sw?
-
 frontend/*.tsbuildinfo
 
+# Backend
 backend/HELP.md
 backend/target/
 backend/!.mvn/wrapper/maven-wrapper.jar
 backend/!**/src/main/**/target/
 backend/!**/src/test/**/target/
 
-backend/### STS ###
+### STS ###
 backend/.apt_generated
 backend/.classpath
 backend/.factorypath
@@ -44,13 +42,13 @@ backend/.settings
 backend/.springBeans
 backend/.sts4-cache
 
-backend/### IntelliJ IDEA ###
+### IntelliJ IDEA ###
 backend/.idea
 backend/*.iws
 backend/*.iml
 backend/*.ipr
 
-backend/### NetBeans ###
+### NetBeans ###
 backend/nbproject/private/
 backend/nbbuild/
 backend/dist/
@@ -60,5 +58,24 @@ backend/build/
 backend/!**/src/main/**/build/
 backend/!**/src/test/**/build/
 
-backend/### VS Code ###
+### VS Code ###
 backend/.vscode/
+
+# General
+.DS_Store
+node_modules/
+/dist
+.env.local
+.env.*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
