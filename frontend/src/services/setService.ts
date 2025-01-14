@@ -120,4 +120,4 @@ class SetService {
         })
     }
 }
-export const setService = new SetService()
+export default new SetService()

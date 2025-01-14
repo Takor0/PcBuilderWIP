@@ -11,6 +11,7 @@
     <h1 class="p-4">Wygenerowane zestawy</h1>
     <DataTable :value="data" tableStyle="min-width: 50rem">
       <Column field="name"/>
+      <Column field="totalPrice" header="Cena"/>
       <Column
           v-for="part in Object.values(PARTS)"
           :field="part"
@@ -37,7 +38,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
 import stepMixin from "@/mixins/stepMixin";
-import {setService} from "@/services/setService";
+import setService from "@/services/setService";
 import Dialog from 'primevue/dialog';
 
 export default {
@@ -57,7 +58,7 @@ export default {
     data() {
       return this.result.map(set => {
         const setParts = set.components
-        const row = {name: set.name}
+        const row = {name: set.name, totalPrice: set.totalPrice}
         for (const part of Object.values(PARTS)) {
           if (!setParts[part]) {
             row[part] = ""
