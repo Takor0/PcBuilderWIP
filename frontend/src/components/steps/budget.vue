@@ -16,7 +16,7 @@
 
 <script>
 
-import stepMixin from "@/components/steps/stepMixin";
+import stepMixin from "@/mixins/stepMixin";
 import Slider from 'primevue/slider';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';

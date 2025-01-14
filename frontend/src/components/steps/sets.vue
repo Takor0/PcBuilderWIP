@@ -12,7 +12,7 @@
 
 <script>
 import Checkbox from "primevue/checkbox";
-import stepMixin from "@/components/steps/stepMixin";
+import stepMixin from "@/mixins/stepMixin";
 export default {
   mixins: [stepMixin],
   components: {Checkbox},
