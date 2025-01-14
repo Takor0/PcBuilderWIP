@@ -21,12 +21,12 @@ export default {
   },
   data() {
     return {
+      defaultStep: this.$route.query?.step || 1,
       steps: [
         {label: 'Budżet', value: 1, title: 'budget'},
         {label: 'Zastosowanie', value: 2, title: 'appliance'},
         {label: 'Wymagania', value: 3, title: 'requirements'},
-        {label: 'Preferencje', value: 4, title: 'preference'},
-        {label: 'Zestawy', value: 5, title: 'sets'},
+        {label: 'Zestawy', value: 4, title: 'sets'},
       ]
     }
   },
@@ -45,7 +45,7 @@ export default {
 
 <template>
   <div>
-    <Stepper :value="1">
+    <Stepper :value="defaultStep">
       <StepList>
         <Step v-for="step in steps" :key="step.value" :value="step.value">{{ step.label }}</Step>
       </StepList>
