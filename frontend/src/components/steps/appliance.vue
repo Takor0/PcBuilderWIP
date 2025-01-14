@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import stepMixin from "@/components/steps/stepMixin";
+import stepMixin from "@/mixins/stepMixin";
 import Card from "primevue/card"
 import Button from "primevue/button"
 export default {

@@ -2,7 +2,7 @@
 import budget from "@/components/steps/budget.vue";
 import appliance from "@/components/steps/appliance.vue";
 import requirements from "@/components/steps/requirements.vue";
-import preference from "@/components/steps/preference.vue";
+import sets from "@/components/steps/sets.vue";
 
 export default {
   props: {
@@ -20,8 +20,8 @@ export default {
           return appliance
         case "requirements":
           return requirements
-        case "preference":
-          return preference;
+        case "sets":
+          return sets;
       }
     }
 
