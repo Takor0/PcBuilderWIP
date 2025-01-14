@@ -11,11 +11,13 @@
 </template>
 
 <script>
+import DataTable from "primevue/datatable";
+import Column from "primevue/column";
 import Checkbox from "primevue/checkbox";
 import stepMixin from "@/mixins/stepMixin";
 export default {
   mixins: [stepMixin],
-  components: {Checkbox},
+  components: {Checkbox, DataTable, Column},
   data() {
     return {
       products: [

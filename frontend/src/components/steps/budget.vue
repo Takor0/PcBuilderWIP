@@ -29,12 +29,6 @@ export default {
 
   },
   mixins: [stepMixin],
-  props: {
-    title: {
-      type: String,
-      required: true
-    }
-  },
   data() {
     return {
       content: 500

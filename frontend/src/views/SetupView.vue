@@ -21,7 +21,7 @@ export default {
   },
   data() {
     return {
-      defaultStep: this.$route.query?.step || 1,
+      currentStep: parseInt(this.$route.query?.step || 1),
       steps: [
         {label: 'Budżet', value: 1, title: 'budget'},
         {label: 'Zastosowanie', value: 2, title: 'appliance'},
@@ -37,7 +37,12 @@ export default {
     isNextStep(stepValue: number) {
       return stepValue < this.steps.length;
     }
-  }
+  },
+  watch: {
+    currentStep(step) {
+      this.$router.replace({query: {step}});
+    }
+  },
 }
 
 </script>
@@ -45,7 +50,8 @@ export default {
 
 <template>
   <div>
-    <Stepper :value="defaultStep">
+    <Stepper
+        @update:value="value => currentStep = value" :value="currentStep">
       <StepList>
         <Step v-for="step in steps" :key="step.value" :value="step.value">{{ step.label }}</Step>
       </StepList>
