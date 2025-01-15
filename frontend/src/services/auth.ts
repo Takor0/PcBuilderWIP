@@ -1,6 +1,6 @@
-import { request } from 'src/utils/request';
-import { BASE_URL } from 'src/config';
-import { ActiveUser } from 'src/services/user';
+import { request } from '@/utils/request';
+import { BASE_URL } from '@/constants/common';
+import {User} from '@/services/user';
 
 export const AUTH_ENDPOINTS = {
     login: `${BASE_URL}auth/jwt/login`,
@@ -19,7 +19,8 @@ class Auth {
             formData: formData,
         });
         if (res.status === 204) {
-            await ActiveUser.set();
+            const user = new User();
+            await user.set();
         }
         return {
             data,
