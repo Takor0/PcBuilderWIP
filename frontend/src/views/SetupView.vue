@@ -7,8 +7,10 @@ import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import Button from 'primevue/button'
 import SetupStep from '@/components/steps/SetupStep.vue'
+import stepMixin from "@/mixins/stepMixin";
 
 export default {
+  mixins: [stepMixin],
   name: 'SetupView',
   components: {
     Stepper,
@@ -18,6 +20,12 @@ export default {
     StepPanel,
     Button,
     SetupStep,
+  },
+  mounted() {
+    if (this.$route.query.clear) {
+      this.clearSetup()
+      this.$router.replace({query: {}})
+    }
   },
   data() {
     return {
@@ -58,35 +66,35 @@ export default {
       <StepPanels>
         <template v-for="step in steps" :key="step.value">
           <StepPanel
-            v-slot="{ activateCallback }"
-            :value="step.value"
+              v-slot="{ activateCallback }"
+              :value="step.value"
           >
             <div class="flex align-items-center gap-2 justify-content-between">
               <Button
-                v-if="isPreviousStep(step.value)"
-                label="Wstecz"
-                icon="pi pi-arrow-left"
-                iconPos="left"
-                @click="activateCallback(step.value-1)"
+                  v-if="isPreviousStep(step.value)"
+                  label="Wstecz"
+                  icon="pi pi-arrow-left"
+                  iconPos="left"
+                  @click="activateCallback(step.value-1)"
               />
               <span style="width: 100px" v-else/>
               <div>
                 {{ step.label }}
               </div>
               <Button
-                v-if="isNextStep(step.value)"
-                label="Dalej"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                @click="activateCallback(step.value+1)"
+                  v-if="isNextStep(step.value)"
+                  label="Dalej"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  @click="activateCallback(step.value+1)"
               />
               <span style="width: 100px" v-else/>
             </div>
           </StepPanel>
           <StepPanel
-            v-slot="{ activateCallback }"
-            :value="step.value"
-            class="mt-2"
+              v-slot="{ activateCallback }"
+              :value="step.value"
+              class="mt-2"
           >
             <SetupStep @next="activateCallback(step.value+1)" :title="step.title"/>
           </StepPanel>

@@ -9,6 +9,9 @@ export const useSetupStore = defineStore('setup', {
         return { result: {} as { [key: string]: Result } }
     },
     actions: {
+        clear() {
+            this.result = {}
+        },
         storeStepResult(title: string, content: any) {
             this.result[title] = content
         },
