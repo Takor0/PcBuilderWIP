@@ -28,7 +28,11 @@ export class User {
         });
     }
 
-    async set() {
+    async set(currentData=undefined) {
+        if (currentData) {
+            this.userStore.set(currentData);
+            return this.userStore.user;
+        }
         const {data, res} = await request({
             url: AUTH_ENDPOINTS.me,
             method: 'GET',

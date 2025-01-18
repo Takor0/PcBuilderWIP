@@ -22,6 +22,7 @@ export default {
     SetupStep,
   },
   mounted() {
+    window.asd = this
     if (this.$route.query.clear) {
       this.clearSetup()
       this.$router.replace({query: {}})
