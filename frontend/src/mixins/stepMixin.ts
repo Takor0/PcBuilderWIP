@@ -13,6 +13,9 @@ export default {
         this.setupStore = useSetupStore()
     },
     methods: {
+        clearSetup() {
+            this.setupStore.clear()
+        },
         nextStep() {
             this.$emit('next')
         }

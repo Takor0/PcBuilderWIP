@@ -45,7 +45,7 @@ export default {
   <div>
     <header>
       <span class="flex flex-row align-content-center ">
-        <Button @click="$router.push({name: 'setup'})" variant="link">
+        <Button @click="$router.push({name:'setup', query: {clear: true}})">
           Nowy
         </Button>
         <Button>
