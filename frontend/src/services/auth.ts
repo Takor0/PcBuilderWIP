@@ -44,11 +44,6 @@ class Auth {
                 isVerified: true,
             },
         });
-        if (res.status === 204) {
-            console.log(res)
-            const user = new User();
-            // await user.set();
-        }
         return {
             data,
             res,
