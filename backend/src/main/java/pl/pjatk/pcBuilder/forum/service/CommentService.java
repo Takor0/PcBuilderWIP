@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.pjatk.pcBuilder.forum.dto.CommentCreateRequest;
+import pl.pjatk.pcBuilder.forum.dto.CommentDTO;
+import pl.pjatk.pcBuilder.forum.dto.TopicDTO;
 import pl.pjatk.pcBuilder.forum.model.Comment;
 import pl.pjatk.pcBuilder.forum.model.Topic;
 import pl.pjatk.pcBuilder.forum.repository.CommentRepository;
@@ -53,14 +55,19 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment findCommentById(Long id) {
+    public CommentDTO findCommentById(Long id) {
         logger.info("Wyszukiwanie komentarza po id: {}", id);
         Comment comment = commentRepository.findById(id).orElse(null);
         if (comment == null) {
             logger.warn("Nie znaleziono komentarza o id: {}", id);
             throw new RuntimeException("Nie znaleziono komentarza " + id);
         }
-        return comment;
+        return new CommentDTO(comment.getId(),
+                comment.getTopic().getId(),
+                comment.getContent(),
+                comment.getUser().getUsername(),
+                comment.getDateOfCreation().toString()
+                );
     }
 
     @Transactional
