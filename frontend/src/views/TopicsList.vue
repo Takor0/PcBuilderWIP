@@ -6,7 +6,6 @@
       <form @submit.prevent="createTopic">
         <InputText v-model="newTopic.title" placeholder="Topic Title" class="p-mb-2"/>
         <Textarea v-model="newTopic.content" placeholder="Topic Content" rows="4"/>
-        <InputText v-model="newTopic.link" placeholder="Link" class="p-mb-2"/>
         <Button label="Submit" type="submit" class="p-button-primary"/>
       </form>
     </Dialog>
@@ -17,9 +16,8 @@
       <Column field="dateOfCreation" header="Data utworzenia"/>
       <Column field="save">
         <template #body="{data}">
-          <Button @click="() => $route.push({name: 'thread', query: {
-            id: data.id
-          }})">asd</Button>
+          <Button @click="() => $router.push({name: 'thread', params: { id: data.id }})">Otwórz wątek</Button>
+          <Button @click="deleteTopic(data.id)"><i class="pi pi-trash"></i></Button>
         </template>
       </Column>
     </DataTable>
@@ -51,8 +49,9 @@ export default {
     async createTopic() {
       try {
         await ForumService.createTopic(this.newTopic);
-        // this.fetchTopics();
-        // this.showCreateDialog = false;
+        this.fetchTopics();
+        this.showCreateDialog = false;
+        this.newTopic = {title: '', content: '', link:''};
       } catch (error) {
 
         console.error(error);
