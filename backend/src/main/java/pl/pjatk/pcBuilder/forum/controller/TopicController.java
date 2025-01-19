@@ -72,4 +72,8 @@ public class TopicController {
                     .body("Comments not found for topic id " + id + ": " + e.getMessage());
         }
     }
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllTopics() {
+        return ResponseEntity.ok(topicService.getAllTopics());
+    }
 }
