@@ -7,14 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.pjatk.pcBuilder.forum.dto.CommentCreateRequest;
 import pl.pjatk.pcBuilder.forum.dto.CommentDTO;
-import pl.pjatk.pcBuilder.forum.dto.TopicDTO;
 import pl.pjatk.pcBuilder.forum.model.Comment;
 import pl.pjatk.pcBuilder.forum.model.Topic;
 import pl.pjatk.pcBuilder.forum.repository.CommentRepository;
 import pl.pjatk.pcBuilder.forum.repository.TopicRepository;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
