@@ -4,7 +4,7 @@
       <div class="w-56">
 
         <InputText v-model.number="content" class="w-full mb-4"/>
-        <Slider :min="500" :max="100000" v-model="content" class="w-full"/>
+        <Slider :min="2000" :max="15000" v-model="content" class="w-full"/>
         <br>
         <div class="button">
           <Button @click="handleSelect" type="submit" severity="secondary" label="Zatwierdź"/>
@@ -31,7 +31,8 @@ export default {
   mixins: [stepMixin],
   data() {
     return {
-      content: 500
+      title: 'budget',
+      content: 2000
     }
   },
   methods: {

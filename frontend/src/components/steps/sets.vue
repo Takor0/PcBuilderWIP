@@ -78,10 +78,18 @@ export default {
     displayPartSpec(index, field) {
       this.currentSpec = this.result[index].components[field]
       this.isSpecDialog = true
+    },
+    async generateSet() {
+      this.result = await setService.generate(this.setupStore.getRequest())
+    },
+  },
+  watch: {
+    "$route.query.step"(val) {
+      if (val === "4") this.generateSet()
     }
   },
   async mounted() {
-    this.result = await setService.generate()
+    this.result = await setService.generate(this.setupStore.getRequest())
   }
 }
 </script>

@@ -2,42 +2,46 @@ import {BASE_URL} from "@/constants/common";
 import {request} from "@/utils/request";
 
 const SET_ENDPOINTS = {
-    base: `${BASE_URL}builds`,
+    base: `${BASE_URL}api/builds`,
     generate: () => `${SET_ENDPOINTS.base}/generate`
 }
 
-enum CpuPreference {
-    AMD, INTEL, NO_PREFERENCE
+export enum CpuPreference {
+    AMD = "AMD",
+    INTEL = "INTEL",
+    NO_PREFERENCE = "NO_PREFERENCE"
 }
 
-enum GpuPreference {
-    NVIDIA, AMD, NO_PREFERENCE
+export enum GpuPreference {
+    NVIDIA = "NVIDIA",
+    AMD = "AMD",
+    NO_PREFERENCE = "NO_PREFERENCE"
 }
 
-enum ComputerUsage {
-    GAMING_AAA,
-    GAMING_ESPORT,
-    PROGRAMMING,
-    GRAPHICS_RENDERING,
-    STREAMING,
-    OFFICE_WORK
+export enum ComputerUsage {
+    GAMING_AAA = "GAMING_AAA",
+    GAMING_ESPORT = "GAMING_ESPORT",
+    PROGRAMMING = "PROGRAMMING",
+    GRAPHICS_RENDERING = "GRAPHICS_RENDERING",
+    STREAMING = "STREAMING",
+    OFFICE_WORK = "OFFICE_WORK"
 }
 
-enum PerformancePriority {
-    CPU_PRIORITY,
-    GPU_PRIORITY,
-    BALANCED
+export enum PerformancePriority {
+    CPU_PRIORITY = "CPU_PRIORITY",
+    GPU_PRIORITY = "GPU_PRIORITY",
+    BALANCED = "BALANCED"
 }
 
-enum AdditionalRequirement {
-    QUIET_OPERATION,
-    OVERCLOCKING,
-    RGB,
-    WIFI,
-    SMALL_FORM_FACTOR
+export enum AdditionalRequirement {
+    QUIET_OPERATION = "QUIET_OPERATION",
+    OVERCLOCKING = "OVERCLOCKING",
+    RGB = "RGB",
+    WIFI = "WIFI",
+    SMALL_FORM_FACTOR = "SMALL_FORM_FACTOR"
 }
 
-interface GeneratePayload {
+export interface GeneratePayload {
     budget: number
     cpuPreference: CpuPreference
     gpuPreference: GpuPreference
@@ -49,64 +53,10 @@ interface GeneratePayload {
 
 class SetService {
     async generate(generatePayload: GeneratePayload) {
-        return [
-            {
-                "name": "Wariant A",
-                "totalPrice": 4850.00,
-                "components": {
-                    "cpu": {
-                        "name": "AMD Ryzen 5 5600X",
-                        "manufacturer": "AMD",
-                        "price": 899.00,
-                        "coreCount": 6,
-                        "coreClock": 3.7,
-                        "boostClock": 4.6,
-                        "socket": "AM4"
-                    },
-                    "motherboard": {
-                        "name": "MSI B550 GAMING PLUS",
-                        "manufacturer": "MSI",
-                        "price": 599.00,
-                        "socket": "AM4",
-                        "chipset": "B550",
-                        "formFactor": "ATX"
-                    },
-                    "videoCard": {
-                        "name": "NVIDIA GeForce RTX 3060",
-                        "manufacturer": "NVIDIA",
-                        "price": 1899.00,
-                        "memory": 12,
-                        "coreClock": 1320,
-                        "boostClock": 1777
-                    },
-                    "hardDrive": {
-                        "name": "Samsung 970 EVO Plus",
-                        "manufacturer": "Samsung",
-                        "price": 399.00,
-                        "capacity": 1000,
-                        "type": "SSD",
-                        "interface": "NVMe"
-                    },
-                    "pcCase": {
-                        "name": "be quiet! Pure Base 500DX",
-                        "manufacturer": "be quiet!",
-                        "price": 449.00,
-                        "formFactor": "ATX",
-                        "hasRgb": true
-                    },
-                    "powerSupply": {
-                        "name": "be quiet! Straight Power 11",
-                        "manufacturer": "be quiet!",
-                        "price": 599.00,
-                        "wattage": 650,
-                        "efficiency": "80PLUS_GOLD"
-                    }
-                }
-            }
-        ]
         const {data, res} = await request({
             url: SET_ENDPOINTS.generate(),
-            body: generatePayload
+            body: generatePayload,
+            method: 'POST'
         })
         return data
     }
