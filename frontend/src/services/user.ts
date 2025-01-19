@@ -33,6 +33,8 @@ export class User {
             this.userStore.set(currentData);
             return this.userStore.user;
         }
+        // change after fix in backend
+        return {}
         const {data, res} = await request({
             url: AUTH_ENDPOINTS.me,
             method: 'GET',

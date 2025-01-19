@@ -44,6 +44,7 @@ export default {
       if (res.status == 200) {
         this.$router.push({name: 'setup'})
       } else {
+        alert("Wystąpił błąd podczas logowania, sprwadź czy podałeś poprawne dane i użytkownik został zweryfikowany")
       }
     },
     async handleRegister() {

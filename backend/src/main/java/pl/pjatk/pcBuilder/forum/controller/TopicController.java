@@ -9,6 +9,7 @@ import pl.pjatk.pcBuilder.forum.service.TopicService;
 
 @RestController
 @RequestMapping("/api/forum/topic")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TopicController {
     private final TopicService topicService;
@@ -18,6 +19,17 @@ public class TopicController {
     public ResponseEntity<?> createTopic(@RequestBody TopicCreateRequest topic) {
         try {
             return ResponseEntity.ok(topicService.createPost(topic));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<?> getAllTopics() {
+        try {
+            return ResponseEntity.ok(topicService.getAllTopics());
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)

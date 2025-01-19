@@ -51,7 +51,7 @@ export default {
         <Button>
           Zestawy
         </Button>
-        <Button>
+        <Button @click="$router.push({name:'forum'})">
           Forum
         </Button>
         <div class="ml-auto">

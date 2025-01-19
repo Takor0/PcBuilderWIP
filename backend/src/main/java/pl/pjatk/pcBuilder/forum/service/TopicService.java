@@ -100,4 +100,13 @@ public class TopicService {
         logger.info("Returning {} comments for topic with id: {}", topic.getComments().size(), topicId);
         return topic.getComments();
     }
+
+    @Transactional
+    public List<Topic> getAllTopics() {
+        List<Topic> topicList = topicRepository.findAll();
+        if (topicList.isEmpty()) {
+            throw new RuntimeException("No topics found");
+        }
+        return topicList;
+    }
 }
