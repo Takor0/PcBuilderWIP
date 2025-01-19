@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>Forum Topics</h2>
+    <h2>Forum</h2>
     <Button label="Create Topic" icon="pi pi-plus" class="p-button-success" @click="showCreateDialog = true"/>
     <Dialog header="Create Topic" v-model:visible="showCreateDialog" :closable="true">
       <form @submit.prevent="createTopic">
@@ -13,11 +13,15 @@
     <DataTable :value="topics" responsiveLayout="scroll">
       <Column field="id" header="ID"></Column>
       <Column field="title" header="Title"></Column>
-      <Column
-          header="Actions"
-          body="{row}"
-          :body="(rowData) => actionTemplate(rowData)"
-      ></Column>
+      <Column field="commentsCount" header="Liczba komentarzy"/>
+      <Column field="dateOfCreation" header="Data utworzenia"/>
+      <Column field="save">
+        <template #body="{data}">
+          <Button @click="() => $route.push({name: 'thread', query: {
+            id: data.id
+          }})">asd</Button>
+        </template>
+      </Column>
     </DataTable>
   </div>
 </template>

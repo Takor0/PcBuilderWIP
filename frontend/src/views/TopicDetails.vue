@@ -2,12 +2,12 @@
   <div>
     <h2>{{ topic.title }}</h2>
     <p>{{ topic.content }}</p>
-    <h3>Comments</h3>
-    <Button label="Add Comment" icon="pi pi-plus" @click="showCommentDialog = true" />
-    <Dialog header="Add Comment" v-model:visible="showCommentDialog">
+    <h3>Komentarze</h3>
+    <Button label="Dodaj komentarz" icon="pi pi-plus" @click="showCommentDialog = true" />
+    <Dialog header="Dodaj komentarz" v-model:visible="showCommentDialog">
       <form @submit.prevent="createComment">
-        <Textarea v-model="newComment.content" placeholder="Write a comment..." rows="4" />
-        <Button label="Submit" class="p-button-primary" />
+        <Textarea v-model="newComment.content" placeholder="Napisz komentarz..." rows="4" />
+        <Button type="submit" label="Dodaj komentarz" class="p-button-primary" />
       </form>
     </Dialog>
     <ul>
@@ -26,6 +26,11 @@ import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
 
 export default {
+  components: {
+    Button,
+    Dialog,
+    Textarea,
+  },
   data() {
     return {
       topic: {},
@@ -43,6 +48,7 @@ export default {
       this.comments = await ForumService.fetchCommentsByTopicId(this.id);
     },
     async createComment() {
+      console.log(11)
       try {
         this.newComment.topicId = this.id;
         await ForumService.createComment(this.newComment);

@@ -29,7 +29,7 @@ const router = createRouter({
                     component: SetupView
                 },
                 { name: 'forum',path: '/forum', component: TopicsList },
-                { path: '/forum/topic/:id', component: TopicDetails, props: true },
+                { name: 'thread', path: '/forum/topic/:id', component: TopicDetails, props: true },
             ]
         },
     ]

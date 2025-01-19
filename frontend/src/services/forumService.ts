@@ -5,7 +5,7 @@ import { request } from '@/utils/request';
 
 const FORUM_ENDPOINTS = {
     base: `${BASE_URL}api/forum/`,
-    topics: () => `${FORUM_ENDPOINTS.base}topic/list`,
+    topics: () => `${FORUM_ENDPOINTS.base}topic/all`,
     topic: (id) => `${FORUM_ENDPOINTS.base}topic/${id}`,
     topicComments: (id) => `${FORUM_ENDPOINTS.base}topic/${id}/comments`,
     createTopic: () => `${FORUM_ENDPOINTS.base}topic/create`,

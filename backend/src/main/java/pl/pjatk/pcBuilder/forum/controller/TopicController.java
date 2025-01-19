@@ -26,17 +26,6 @@ public class TopicController {
         }
     }
 
-    @PostMapping("/list")
-    public ResponseEntity<?> getAllTopics() {
-        try {
-            return ResponseEntity.ok(topicService.getAllTopics());
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<?> getTopicById(@PathVariable Long id) {
         try {
