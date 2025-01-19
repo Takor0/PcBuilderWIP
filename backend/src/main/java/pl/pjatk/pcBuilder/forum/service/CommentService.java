@@ -12,6 +12,8 @@ import pl.pjatk.pcBuilder.forum.repository.CommentRepository;
 import pl.pjatk.pcBuilder.forum.repository.TopicRepository;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CommentService {

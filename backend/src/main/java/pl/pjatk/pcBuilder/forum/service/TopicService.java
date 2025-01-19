@@ -16,6 +16,7 @@ import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -70,6 +71,7 @@ public class TopicService {
         return new TopicDTO(topic.getId(),
                             topic.getTitle(),
                             topic.getUser().getUsername(),
+                            topic.getDateOfCreation().toString(),
                             commentCount);
     }
 
@@ -99,5 +101,26 @@ public class TopicService {
 
         logger.info("Returning {} comments for topic with id: {}", topic.getComments().size(), topicId);
         return topic.getComments();
+    }
+
+    @Transactional
+    public List<TopicDTO> getAllTopics() {
+        logger.info("Pobieranie wszystkich postów.");
+
+        List<TopicDTO> topics = topicRepository.findAll().stream()
+                .map(topic -> {
+                    int commentCount = commentRepository.countByTopic_Id(topic.getId());
+                    return new TopicDTO(
+                            topic.getId(),
+                            topic.getTitle(),
+                            topic.getUser().getUsername(),
+                            topic.getDateOfCreation().toString(),
+                            commentCount
+                    );
+                })
+                .collect(Collectors.toList());
+
+        logger.info("Pobrano wszystkie posty: {}", topics.size());
+        return topics;
     }
 }
