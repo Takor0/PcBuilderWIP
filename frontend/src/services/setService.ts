@@ -42,7 +42,7 @@ interface GeneratePayload {
     cpuPreference: CpuPreference
     gpuPreference: GpuPreference
     usage: ComputerUsage
-    performancePriority: PerformancePriority
+    priority: PerformancePriority
     requirements: Array<AdditionalRequirement>
 }
 
@@ -104,8 +104,6 @@ class SetService {
                 }
             }
         ]
-
-
         const {data, res} = await request({
             url: SET_ENDPOINTS.generate(),
             body: generatePayload
