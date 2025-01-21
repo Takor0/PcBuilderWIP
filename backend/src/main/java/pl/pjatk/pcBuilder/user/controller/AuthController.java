@@ -60,9 +60,18 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<?> validate(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> validate(@RequestHeader(value = "Authorization", required = false) String authHeader,
+                                      @CookieValue(value = "auth-token", required = false) String cookieToken) {
         try {
-            token = token.replace("Bearer ", "");
+            String token;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.replace("Bearer ", "");
+            } else if (cookieToken != null) {
+                token = cookieToken;
+            } else {
+                throw new RuntimeException("Token nie został dostarczony");
+            }
+
             String username = authService.validateToken(token);
             return ResponseEntity.ok("Token jest ważny dla użytkownika: " + username);
         } catch (RuntimeException e) {
@@ -71,4 +80,6 @@ public class AuthController {
                     .body(e.getMessage());
         }
     }
+
+
 }
