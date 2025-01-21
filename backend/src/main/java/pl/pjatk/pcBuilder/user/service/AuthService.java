@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import lombok.RequiredArgsConstructor;
 import pl.pjatk.pcBuilder.config.JwtUtil;
 import pl.pjatk.pcBuilder.user.model.User;
@@ -12,7 +11,6 @@ import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
 import java.util.HashSet;
 import java.util.Set;
-
 
 @Service
 @RequiredArgsConstructor
@@ -104,5 +102,4 @@ public class AuthService {
         invalidatedTokens.add(token);
         logger.info("Token został unieważniony");
     }
-
 }

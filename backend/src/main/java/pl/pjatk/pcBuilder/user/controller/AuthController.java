@@ -1,5 +1,7 @@
 package pl.pjatk.pcBuilder.user.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,10 +19,18 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
         try {
             String token = authService.loginWithToken(loginRequest.getUsernameOrEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(token);
+
+            Cookie cookie = new Cookie("auth-token", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(3600);
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok("Zalogowano pomyślnie");
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
@@ -29,10 +39,18 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token, HttpServletResponse response) {
         try {
             token = token.replace("Bearer ", "");
             authService.invalidateToken(token);
+
+            Cookie cookie = new Cookie("auth-token", null);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setPath("/");
+            cookie.setMaxAge(0);
+            response.addCookie(cookie);
+
             return ResponseEntity.ok("Wylogowano pomyślnie");
         } catch (RuntimeException e) {
             return ResponseEntity
