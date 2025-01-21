@@ -39,9 +39,22 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String token, HttpServletResponse response) {
+    public ResponseEntity<?> logout(@RequestHeader(value = "Authorization", required = false) String authHeader,
+                                    @CookieValue(value = "auth-token", required = false) String cookieToken,
+                                    HttpServletResponse response) {
         try {
-            token = token.replace("Bearer ", "");
+            String token = null;
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.replace("Bearer ", "");
+            } else if (cookieToken != null) {
+                token = cookieToken;
+            }
+
+            if (token == null) {
+                throw new RuntimeException("Nie znaleziono tokena do wylogowania");
+            }
+
             authService.invalidateToken(token);
 
             Cookie cookie = new Cookie("auth-token", null);
@@ -50,14 +63,15 @@ public class AuthController {
             cookie.setPath("/");
             cookie.setMaxAge(0);
             response.addCookie(cookie);
-
+            
             return ResponseEntity.ok("Wylogowano pomyślnie");
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
+                    .body("Błąd podczas wylogowywania: " + e.getMessage());
         }
     }
+
 
     @GetMapping("/validate")
     public ResponseEntity<?> validate(@RequestHeader(value = "Authorization", required = false) String authHeader,
