@@ -6,8 +6,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import pl.pjatk.pcBuilder.config.JwtUtil;
 import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
+
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +20,8 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final Set<String> invalidatedTokens = new HashSet<>();
 
     public User registerUser(User user) {
         logger.info("Próba rejestracji użytkownika: {}", user.getUsername());
@@ -63,21 +70,16 @@ public class AuthService {
         return verifiedUser;
     }
 
-    public User loginUser(String usernameOrEmail, String rawPassword) {
+    public String loginWithToken(String usernameOrEmail, String rawPassword) {
         logger.info("Próba logowania użytkownika: {}", usernameOrEmail);
-        
+
         User user = userRepository.findByUsername(usernameOrEmail);
         if (user == null) {
             user = userRepository.findByEmail(usernameOrEmail);
         }
 
-        if (user == null) {
+        if (user == null || !passwordEncoder.matches(rawPassword, user.getPassword())) {
             logger.warn("Nieprawidłowe dane logowania dla: {}", usernameOrEmail);
-            throw new RuntimeException("Nieprawidłowe dane logowania");
-        }
-
-        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
-            logger.warn("Nieprawidłowe hasło dla użytkownika: {}", usernameOrEmail);
             throw new RuntimeException("Nieprawidłowe dane logowania");
         }
 
@@ -86,8 +88,21 @@ public class AuthService {
             throw new RuntimeException("Użytkownik nie został jeszcze zweryfikowany.");
         }
 
-        logger.info("Użytkownik {} zalogował się pomyślnie", usernameOrEmail);
-        return user;
+        String token = jwtUtil.generateToken(user.getUsername());
+        logger.info("Token wygenerowany dla użytkownika: {}", usernameOrEmail);
+        return token;
+    }
+
+    public String validateToken(String token) {
+        if (invalidatedTokens.contains(token)) {
+            throw new RuntimeException("Token został unieważniony");
+        }
+        return jwtUtil.validateToken(token);
+    }
+
+    public void invalidateToken(String token) {
+        invalidatedTokens.add(token);
+        logger.info("Token został unieważniony");
     }
 
 }
