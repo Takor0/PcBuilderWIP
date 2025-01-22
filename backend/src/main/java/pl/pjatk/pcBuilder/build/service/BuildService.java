@@ -147,37 +147,37 @@ public class BuildService {
         Map<String, String> descriptions = new HashMap<>();
         
         descriptions.put("cpu", String.format(
-            "%s %s with %d cores at %.1fGHz (boosts to %.1fGHz). %s",
+            "%s %s z %d rdzeniami o taktowaniu %.1fGHz (boost do %.1fGHz). %s",
             cpu.getBrand(), cpu.getName(), cpu.getCoreCount(), 
             cpu.getCoreClock(), cpu.getBoostClock(),
-            cpu.isHasGraphics() ? "Includes integrated graphics." : ""));
+            cpu.isHasGraphics() ? "Posiada zintegrowaną grafikę." : ""));
 
         descriptions.put("gpu", String.format(
-            "%s %s with %dGB VRAM, core clock at %.1fGHz (boosts to %.1fGHz)",
+            "%s %s z pamięcią %dGB VRAM, taktowanie bazowe %.1fGHz (boost do %.1fGHz)",
             gpu.getBrand(), gpu.getName(), gpu.getMemory(),
             gpu.getCoreClock(), gpu.getBoostClock()));
 
         descriptions.put("motherboard", String.format(
-            "%s supporting up to %dMHz memory speed. %s",
+            "%s obsługująca pamięć do %dMHz. %s",
             motherboard.getName(), (int)motherboard.getMaxMemorySpeed(),
-            motherboard.isHasWifi() ? "Includes built-in WiFi." : ""));
+            motherboard.isHasWifi() ? "Posiada wbudowane WiFi." : ""));
 
         StringBuilder storageDesc = new StringBuilder();
         for (HardDrive drive : storage) {
             storageDesc.append(String.format(
-                "%s %dGB %s drive, ",
+                "%s %dGB typu %s, ",
                 drive.getName(), drive.getCapacity(), drive.getType()));
         }
         descriptions.put("storage", storageDesc.substring(0, storageDesc.length() - 2));
 
         descriptions.put("powerSupply", String.format(
-            "%s rated at %dW with %s efficiency",
+            "%s o mocy %dW z certyfikatem %s",
             psu.getName(), psu.getWattage(), psu.getEfficiency()));
 
         descriptions.put("case", String.format(
-            "%s (%s form factor)%s",
+            "%s (format %s)%s",
             pcCase.getName(), pcCase.getFormFactor(),
-            pcCase.isHasRgb() ? " with RGB lighting" : ""));
+            pcCase.isHasRgb() ? " z podświetleniem RGB" : ""));
 
         return descriptions;
     }
