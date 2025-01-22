@@ -28,9 +28,12 @@ cd pcbuilder
 2. Skopiuj plik konfiguracyjny:
 ```bash
 cp .env.example .env
+cp backend/src/main/resources/application.properties.example backend/src/main/resources/application.properties
 ```
 
-3. Skonfiguruj backend (README znajdujące się w katalogu backend)
+3. Skonfiguruj backend:
+   - Domyślna konfiguracja nie wymaga zmian (puste hasło do bazy danych)
+   - W razie potrzeby dostosuj ustawienia w `backend/src/main/resources/application.properties`
 
 4. Uruchom aplikację:
 ```bash

@@ -243,6 +243,7 @@ public class BuildService {
                 request.getCpuPreference(), availableCpus.size());
         }
 
+
         if (availableCpus.isEmpty()) {
             throw new RuntimeException("Nie znaleziono procesorów spełniających preferencje");
         }
