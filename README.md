@@ -147,12 +147,12 @@ Odpowiedź zawiera szczegółowe informacje o komponentach oraz ich opisy genero
     },
     "totalPrice": 4999.99,
     "componentDescriptions": {
-        "cpu": "AMD Ryzen 7 5800X with 8 cores at 3.8GHz (boosts to 4.7GHz).",
-        "gpu": "NVIDIA GeForce RTX 3070 with 8GB VRAM, core clock at 1.50GHz (boosts to 1.73GHz)",
-        "motherboard": "MSI MAG B550 TOMAHAWK supporting up to 4800MHz memory speed.",
-        "storage": "Samsung 970 EVO Plus 1000GB SSD drive",
-        "powerSupply": "Corsair RM750x rated at 750W with 80+ Gold efficiency",
-        "case": "NZXT H510 (ATX form factor)"
+        "cpu": "AMD Ryzen 7 5800X z 8 rdzeniami o taktowaniu 3.8GHz (boost do 4.7GHz).",
+        "gpu": "NVIDIA GeForce RTX 3070 z pamięcią 8GB VRAM, taktowanie bazowe 1.50GHz (boost do 1.73GHz)",
+        "motherboard": "MSI MAG B550 TOMAHAWK obsługująca pamięć do 4800MHz.",
+        "storage": "Samsung 970 EVO Plus 1000GB typu SSD",
+        "powerSupply": "Corsair RM750x o mocy 750W z certyfikatem 80+ Gold",
+        "case": "NZXT H510 (format ATX)"
     }
 }
 ```
