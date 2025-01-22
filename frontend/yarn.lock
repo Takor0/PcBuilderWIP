@@ -230,6 +230,13 @@
   resolved "https://registry.yarnpkg.com/@pkgr/core/-/core-0.1.1.tgz#1ec17e2edbec25c8306d424ecfbf13c7de1aaa31"
   integrity sha512-cq8o4cWH0ibXh9VGi5P20Tu9XF/0fFXl9EUinr9QfTM7a7p0oTA4iJRCQWppXR1Pg8dSM0UCItCkPwsk9qWWYA==
 
+"@primeuix/forms@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@primeuix/forms/-/forms-0.0.2.tgz#d8b7d599fdd9fa45e5a479785ffd704523d6083a"
+  integrity sha512-DpecPQd/Qf/kav4LKCaIeGuT3AkwhJzuHCkLANTVlN/zBvo8KIj3OZHsCkm0zlIMVVnaJdtx1ULNlRQdudef+A==
+  dependencies:
+    "@primeuix/utils" "^0.3.0"
+
 "@primeuix/styled@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@primeuix/styled/-/styled-0.2.0.tgz#d3dbdaa00f1cedcad92bbbed6f1b1efb375343c8"
@@ -237,10 +244,22 @@
   dependencies:
     "@primeuix/utils" "^0.2.0"
 
+"@primeuix/styled@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@primeuix/styled/-/styled-0.3.2.tgz#a6093e81a66fc78b915b5e8d998cc73c2c47a1dc"
+  integrity sha512-ColZes0+/WKqH4ob2x8DyNYf1NENpe5ZguOvx5yCLxaP8EIMVhLjWLO/3umJiDnQU4XXMLkn2mMHHw+fhTX/mw==
+  dependencies:
+    "@primeuix/utils" "^0.3.2"
+
 "@primeuix/utils@^0.2.0":
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/@primeuix/utils/-/utils-0.2.0.tgz#42bde7c87f6103460256721731138378793f936f"
   integrity sha512-AaDIeRFlsbkVTk2s0mlEjnGSLi31X669NVwo+n+AVAnBdDiQznjipNTpHbOobVBtjOKZize74PChK6uoaSBRUw==
+
+"@primeuix/utils@^0.3.0", "@primeuix/utils@^0.3.2":
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/@primeuix/utils/-/utils-0.3.2.tgz#dbf92f6b5e18abe214f592a0b51bf4ca02a1f808"
+  integrity sha512-B+nphqTQeq+i6JuICLdVWnDMjONome2sNz0xI65qIOyeB4EF12CoKRiCsxuZ5uKAkHi/0d1LqlQ9mIWRSdkavw==
 
 "@primevue/core@4.1.1":
   version "4.1.1"
@@ -249,6 +268,23 @@
   dependencies:
     "@primeuix/styled" "^0.2.0"
     "@primeuix/utils" "^0.2.0"
+
+"@primevue/core@4.2.5":
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/@primevue/core/-/core-4.2.5.tgz#18a20e0b7c968da1bed1bb9d11aca3b116b34457"
+  integrity sha512-+oWBIQs5dLd2Ini4KEVOlvPILk989EHAskiFS3R/dz3jeOllJDMZFcSp8V9ddV0R3yDaPdLVkfHm2Q5t42kU2Q==
+  dependencies:
+    "@primeuix/styled" "^0.3.2"
+    "@primeuix/utils" "^0.3.2"
+
+"@primevue/forms@^4.2.5":
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/@primevue/forms/-/forms-4.2.5.tgz#49071970ab040b91cb2fb035619d2c5c34d994bd"
+  integrity sha512-5jarJQ9Qv32bOo/0tY5bqR3JZI6+YmmoUQ2mjhVSbVElQsE4FNfhT7a7JwF+xgBPMPc8KWGNA1QB248HhPNVAg==
+  dependencies:
+    "@primeuix/forms" "^0.0.2"
+    "@primeuix/utils" "^0.3.2"
+    "@primevue/core" "4.2.5"
 
 "@primevue/icons@4.1.1":
   version "4.1.1"
@@ -529,7 +565,7 @@
     de-indent "^1.0.2"
     he "^1.2.0"
 
-"@vue/devtools-api@^6.6.4":
+"@vue/devtools-api@^6.6.3", "@vue/devtools-api@^6.6.4":
   version "6.6.4"
   resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.6.4.tgz#cbe97fe0162b365edc1dba80e173f90492535343"
   integrity sha512-sGhTPMuXqZ1rVOk32RylztWkfXTRhuS7vgAKv0zjqk8gbsHkJ7xfFf+jbySxt7tWObEJwyKaHMikV/WGDiQm8g==
@@ -1378,6 +1414,14 @@ pidtree@^0.6.0:
   resolved "https://registry.yarnpkg.com/pidtree/-/pidtree-0.6.0.tgz#90ad7b6d42d5841e69e0a2419ef38f8883aa057c"
   integrity sha512-eG2dWTVw5bzqGRztnHExczNxt5VGsE6OwTeCG3fdUf9KBsZzO3R5OIIIzWR+iZA0NtZ+RDVdaoE2dK1cn6jH4g==
 
+pinia@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/pinia/-/pinia-2.3.0.tgz#b81f4ac7da1031af8d8f7007686c4b2799a55b9f"
+  integrity sha512-ohZj3jla0LL0OH5PlLTDMzqKiVw2XARmC1XYLdLWIPBMdhDW/123ZWr4zVAhtJm+aoSkFa13pYXskAvAscIkhQ==
+  dependencies:
+    "@vue/devtools-api" "^6.6.3"
+    vue-demi "^0.14.10"
+
 postcss-selector-parser@^6.0.15:
   version "6.1.2"
   resolved "https://registry.yarnpkg.com/postcss-selector-parser/-/postcss-selector-parser-6.1.2.tgz#27ecb41fb0e3b6ba7a1ec84fff347f734c7929de"
@@ -1799,6 +1843,11 @@ vscode-uri@^3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.8.tgz#1770938d3e72588659a172d0fd4642780083ff9f"
   integrity sha512-AyFQ0EVmsOZOlAnxoFOGOq1SQDWAB7C6aqMGS23svWAllfOaxbuFvcT8D1i8z3Gyn8fraVeZNNmN6e9bxxXkKw==
+
+vue-demi@^0.14.10:
+  version "0.14.10"
+  resolved "https://registry.yarnpkg.com/vue-demi/-/vue-demi-0.14.10.tgz#afc78de3d6f9e11bf78c55e8510ee12814522f04"
+  integrity sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==
 
 vue-eslint-parser@^9.3.1, vue-eslint-parser@^9.4.3:
   version "9.4.3"

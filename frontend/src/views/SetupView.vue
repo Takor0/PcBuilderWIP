@@ -7,8 +7,10 @@ import Step from 'primevue/step';
 import StepPanel from 'primevue/steppanel';
 import Button from 'primevue/button'
 import SetupStep from '@/components/steps/SetupStep.vue'
+import stepMixin from "@/mixins/stepMixin";
 
 export default {
+  mixins: [stepMixin],
   name: 'SetupView',
   components: {
     Stepper,
@@ -19,14 +21,20 @@ export default {
     Button,
     SetupStep,
   },
+  mounted() {
+    if (this.$route.query.clear) {
+      this.clearSetup()
+      this.$router.replace({query: {}})
+    }
+  },
   data() {
     return {
+      currentStep: parseInt(this.$route.query?.step || 1),
       steps: [
         {label: 'Budżet', value: 1, title: 'budget'},
         {label: 'Zastosowanie', value: 2, title: 'appliance'},
         {label: 'Wymagania', value: 3, title: 'requirements'},
-        {label: 'Preferencje', value: 4, title: 'preferences'},
-        {label: 'Zestawy', value: 5, title: 'sets'},
+        {label: 'Zestawy', value: 4, title: 'sets'},
       ]
     }
   },
@@ -37,7 +45,12 @@ export default {
     isNextStep(stepValue: number) {
       return stepValue < this.steps.length;
     }
-  }
+  },
+  watch: {
+    currentStep(step) {
+      this.$router.replace({query: {step}});
+    }
+  },
 }
 
 </script>
@@ -45,43 +58,45 @@ export default {
 
 <template>
   <div>
-    <Stepper :value="1">
+    <Stepper
+        @update:value="value => currentStep = value" :value="currentStep">
       <StepList>
         <Step v-for="step in steps" :key="step.value" :value="step.value">{{ step.label }}</Step>
       </StepList>
       <StepPanels>
         <template v-for="step in steps" :key="step.value">
           <StepPanel
-            v-slot="{ activateCallback }"
-            :value="step.value"
+              v-slot="{ activateCallback }"
+              :value="step.value"
           >
             <div class="flex align-items-center gap-2 justify-content-between">
               <Button
-                v-if="isPreviousStep(step.value)"
-                label="Wstecz"
-                icon="pi pi-arrow-left"
-                iconPos="left"
-                @click="activateCallback(step.value-1)"
+                  v-if="isPreviousStep(step.value)"
+                  label="Wstecz"
+                  icon="pi pi-arrow-left"
+                  iconPos="left"
+                  @click="activateCallback(step.value-1)"
               />
               <span style="width: 100px" v-else/>
               <div>
                 {{ step.label }}
               </div>
               <Button
-                v-if="isNextStep(step.value)"
-                label="Dalej"
-                icon="pi pi-arrow-right"
-                iconPos="right"
-                @click="activateCallback(step.value+1)"
+                  v-if="isNextStep(step.value)"
+                  label="Dalej"
+                  icon="pi pi-arrow-right"
+                  iconPos="right"
+                  @click="activateCallback(step.value+1)"
               />
               <span style="width: 100px" v-else/>
             </div>
           </StepPanel>
           <StepPanel
-            :value="step.value"
-            class="mt-2"
+              v-slot="{ activateCallback }"
+              :value="step.value"
+              class="mt-2"
           >
-            <SetupStep :title="step.title"/>
+            <SetupStep @next="activateCallback(step.value+1)" :title="step.title"/>
           </StepPanel>
         </template>
       </StepPanels>
