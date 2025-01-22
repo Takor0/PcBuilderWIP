@@ -6,11 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pl.pjatk.pcBuilder.forum.dto.CommentDTO;
 import pl.pjatk.pcBuilder.forum.dto.TopicCreateRequest;
 import pl.pjatk.pcBuilder.forum.dto.TopicDTO;
-import pl.pjatk.pcBuilder.forum.model.Comment;
 import pl.pjatk.pcBuilder.forum.model.Topic;
-import pl.pjatk.pcBuilder.forum.repository.CommentRepository;
 import pl.pjatk.pcBuilder.forum.repository.TopicRepository;
 import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
@@ -25,37 +24,32 @@ public class TopicService {
     private static final Logger logger = LoggerFactory.getLogger(TopicService.class);
     private final TopicRepository topicRepository;
     private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
 
 
     @Transactional
-    public Topic createPost(TopicCreateRequest topicRequest) {
+    public TopicDTO createTopic(TopicCreateRequest topicRequest, String username) {
         logger.info("Tworzenie tematu o tytule: {}", topicRequest.getTitle());
 
-        if (topicRequest == null) {
-            logger.warn("Topic object is null. Cannot create topic.");
-            throw new IllegalArgumentException("Topic object cannot be null");
-        }
         if (topicRequest.getTitle() == null) {
-            logger.warn("Topic title is null. Cannot create topic.");
-            throw new IllegalArgumentException("Topic title cannot be null");
+            logger.warn("Bledne dane tematu. Nie można swtowrzyć tematu.");
+            throw new IllegalArgumentException("Nieprawidlowe dane tematu");
         }
-        Topic topic = new Topic();
 
-        User user = userRepository.findByUsername("test_user");
+        User user = userRepository.findByUsername(username);
         if (user == null) {
-            logger.warn("Uzytkownik nie istnieje.");
-            throw new RuntimeException("Uzytkownik nie istnieje.");
+            throw new RuntimeException("Użytkownik nie istnieje.");
         }
-        topic.setUser(user);
 
+        Topic topic = new Topic();
+        topic.setUser(user);
         topic.setTitle(topicRequest.getTitle());
         topic.setContent(topicRequest.getContent());
         topic.setLink(topicRequest.getLink());
+        topicRepository.save(topic);
 
         logger.info("Temat stworzony: {}", topic.getTitle());
-        topicRepository.save(topic);
-        return topic;
+        return mapToDTO(topic);
     }
 
     @Transactional
@@ -66,61 +60,73 @@ public class TopicService {
             logger.warn("Nie znaleziono tematu o id: {}", id);
             throw new RuntimeException("Nie znaleziono tematu " + id);
         }
-        int commentCount = commentRepository.countByTopic_Id(id);
-
-        return new TopicDTO(topic.getId(),
-                            topic.getTitle(),
-                            topic.getUser().getUsername(),
-                            topic.getDateOfCreation().toString(),
-                            commentCount);
+        logger.info("Temat znaleziony: {}", id);
+        return mapToDTO(topic);
     }
 
     @Transactional
-    public void deletePost(Long id) {
+    public void deleteTopic(Long id, String username) {
         logger.info("Usuwanie tematu o id: {}", id);
-        Topic topic = topicRepository.findById(id).orElse(null);
-        if (topic == null) {
-            logger.warn("Nie znaleziono tematu o id: {}", id);
-            throw new RuntimeException("Nie znaleziono tematu " + id);
+
+        Topic topic = topicRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Nie znaleziono tematu o id: {}", id);
+                    return new RuntimeException("Nie znaleziono tematu " + id);
+                });
+
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("Nie znaleziono użytkownika: " + username);
         }
+
+        if (!user.getIsAdmin() && !topic.getUser().getUsername().equals(username)) {
+            logger.warn("Użytkownik {} nie ma uprawnień do usunięcia tematu o id: {}", username, id);
+            throw new RuntimeException("Nie masz uprawnień do usunięcia tego tematu.");
+        }
+
         topicRepository.deleteById(id);
-        logger.info("Usunieieto tematu o id: {}", id);
+        logger.info("Usunięto temat o id: {}", id);
     }
 
 
     @Transactional
-    public List<Comment> getAllCommentsFromTopic(Long topicId) {
+    public List<CommentDTO> getAllCommentsFromTopic(Long topicId) {
         logger.info("Fetching all comments for topic with id: {}", topicId);
-        Topic topic = topicRepository.findById(topicId)
-                .orElseThrow(() -> new RuntimeException("No topic found with id " + topicId));
 
+        Topic topic = topicRepository.findById(topicId).orElse(null);
         if (topic == null) {
-            logger.warn("No topic found with id: {}", topicId);
-            throw new RuntimeException("No topic found with id " + topicId);
+            logger.warn("Nie znaleziono tematu z id:" + topicId);
+            throw new RuntimeException("Nie znaleziono tematu z id:" + topicId);
         }
+        logger.info("Zwrocono {} komentarzy dla tematu o id: {}", topic.getComments().size(), topicId);
 
-        logger.info("Returning {} comments for topic with id: {}", topic.getComments().size(), topicId);
-        return topic.getComments();
+        return topic.getComments().stream()
+                .map(comment -> commentService.mapToDTO(comment))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public List<TopicDTO> getAllTopics() {
         logger.info("Pobieranie wszystkich postów.");
-
         List<TopicDTO> topics = topicRepository.findAll().stream()
-                .map(topic -> {
-                    int commentCount = commentRepository.countByTopic_Id(topic.getId());
-                    return new TopicDTO(
-                            topic.getId(),
-                            topic.getTitle(),
-                            topic.getUser().getUsername(),
-                            topic.getDateOfCreation().toString(),
-                            commentCount
-                    );
-                })
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
-
-        logger.info("Pobrano wszystkie posty: {}", topics.size());
+        if (topics.isEmpty()) {
+            logger.warn("Brak tematów do wyświetlenia.");
+        }
+        logger.info("Pobrano wszystkie tematy: {}", topics.size());
         return topics;
     }
+
+    public TopicDTO mapToDTO(Topic topic) {
+        return new TopicDTO(
+                topic.getId(),
+                topic.getTitle(),
+                topic.getContent(),
+                topic.getUser().getUsername(),
+                topic.getDateOfCreation().toString(),
+                topic.getComments().size()
+        );
+    }
+
 }

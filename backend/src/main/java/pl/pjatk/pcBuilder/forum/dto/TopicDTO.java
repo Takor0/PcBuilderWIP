@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class TopicDTO {
     private Long id;
     private String title;
+    private String content;
     private String username;
     private String dateOfCreation;
     private int commentsCount;
