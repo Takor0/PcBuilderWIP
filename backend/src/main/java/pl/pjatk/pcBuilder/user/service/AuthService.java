@@ -40,6 +40,7 @@ public class AuthService {
         user.setPassword(hashedPassword);
 
         user.setIsVerified(false);
+        user.setIsAdmin(false);
         User savedUser = userRepository.save(user);
         logger.info("Użytkownik {} został pomyślnie zarejestrowany", user.getUsername());
         return savedUser;
