@@ -20,7 +20,6 @@ import pl.pjatk.pcBuilder.build.model.components.Motherboard;
 import pl.pjatk.pcBuilder.build.model.components.PcCase;
 import pl.pjatk.pcBuilder.build.model.components.PowerSupply;
 import pl.pjatk.pcBuilder.build.model.components.VideoCard;
-import pl.pjatk.pcBuilder.build.model.enums.AdditionalRequirement;
 import pl.pjatk.pcBuilder.build.model.enums.BuildType;
 import pl.pjatk.pcBuilder.build.model.enums.CpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
@@ -51,18 +50,18 @@ public class BuildService {
         Cpu selectedCpu = selectCpu(request, cpuBudget, buildType);
         remainingBudget -= selectedCpu.getPrice();
 
-        // Teraz GPU - tutaj wrzucamy najwięcej kasy, 40% budżetu
-        double gpuBudget = request.getBudget() * 0.4;
+        // Teraz GPU - tutaj wrzucamy najwięcej kasy, 40% z pozostałego budżetu
+        double gpuBudget = remainingBudget * 0.4;
         VideoCard selectedGpu = selectGpu(request, gpuBudget, buildType);
         remainingBudget -= selectedGpu.getPrice();
 
         // Alokacja 15% budżetu na płytę główną
-        double motherboardBudget = request.getBudget() * 0.15;
+        double motherboardBudget = remainingBudget * 0.15;
         Motherboard selectedMotherboard = selectMotherboard(request, selectedCpu, motherboardBudget);
         remainingBudget -= selectedMotherboard.getPrice();
 
         // Alokacja maksymalnie 15% budżetu na dyski
-        double storageBudget = Math.min(remainingBudget, request.getBudget() * 0.15);
+        double storageBudget = Math.min(remainingBudget, remainingBudget * 0.15);
         List<HardDrive> selectedStorage = selectStorage(request, storageBudget);
         remainingBudget -= selectedStorage.stream().mapToDouble(HardDrive::getPrice).sum();
 
@@ -224,12 +223,6 @@ public class BuildService {
         availableMotherboards = availableMotherboards.stream()
             .filter(mb -> mb.getSocket().equals(cpu.getSocket()))
             .collect(Collectors.toList());
-            
-        if (request.getRequirements().contains(AdditionalRequirement.WIFI)) {
-            availableMotherboards = availableMotherboards.stream()
-                .filter(Motherboard::isHasWifi)
-                .collect(Collectors.toList());
-        }
         
         return availableMotherboards.stream()
             .max(Comparator.comparingDouble(mb -> 
@@ -293,12 +286,6 @@ public class BuildService {
         availableCases = availableCases.stream()
             .filter(pcCase -> pcCase.getFormFactor().equals(motherboard.getFormFactor()))
             .collect(Collectors.toList());
-            
-        if (request.getRequirements().contains(AdditionalRequirement.RGB)) {
-            availableCases = availableCases.stream()
-                .filter(PcCase::isHasRgb)
-                .collect(Collectors.toList());
-        }
         
         return availableCases.stream()
             .max(Comparator.comparingDouble(pcCase -> 

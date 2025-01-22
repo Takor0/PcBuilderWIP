@@ -1,11 +1,8 @@
 package pl.pjatk.pcBuilder.build.model;
 
-import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pjatk.pcBuilder.build.model.enums.AdditionalRequirement;
 import pl.pjatk.pcBuilder.build.model.enums.ComputerUsage;
 import pl.pjatk.pcBuilder.build.model.enums.CpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
@@ -20,5 +17,4 @@ public class BuildRequest {
     private GpuPreference gpuPreference;
     private ComputerUsage usage;
     private PerformancePriority priority;
-    private Set<AdditionalRequirement> requirements;
 } 
