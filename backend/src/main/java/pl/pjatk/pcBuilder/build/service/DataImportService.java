@@ -16,18 +16,8 @@ import com.opencsv.exceptions.CsvValidationException;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import pl.pjatk.pcBuilder.build.model.components.Cpu;
-import pl.pjatk.pcBuilder.build.model.components.HardDrive;
-import pl.pjatk.pcBuilder.build.model.components.Motherboard;
-import pl.pjatk.pcBuilder.build.model.components.PcCase;
-import pl.pjatk.pcBuilder.build.model.components.PowerSupply;
-import pl.pjatk.pcBuilder.build.model.components.VideoCard;
-import pl.pjatk.pcBuilder.build.repository.CpuRepository;
-import pl.pjatk.pcBuilder.build.repository.HardDriveRepository;
-import pl.pjatk.pcBuilder.build.repository.MotherboardRepository;
-import pl.pjatk.pcBuilder.build.repository.PcCaseRepository;
-import pl.pjatk.pcBuilder.build.repository.PowerSupplyRepository;
-import pl.pjatk.pcBuilder.build.repository.VideoCardRepository;
+import pl.pjatk.pcBuilder.build.model.components.*;
+import pl.pjatk.pcBuilder.build.repository.*;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +29,7 @@ public class DataImportService {
     private final HardDriveRepository hardDriveRepository;
     private final PowerSupplyRepository powerSupplyRepository;
     private final PcCaseRepository pcCaseRepository;
+    private final MemoryRepository memoryRepository;
 
     private static final String DATA_DIR = "data-staging/csv/";
 
@@ -52,6 +43,7 @@ public class DataImportService {
         importStorage();
         importPowerSupplies();
         importCases();
+        importMemory();
         logger.info("Zakończono import danych");
     }
 
@@ -63,6 +55,7 @@ public class DataImportService {
         motherboardRepository.deleteAll();
         videoCardRepository.deleteAll();
         cpuRepository.deleteAll();
+        memoryRepository.deleteAll();
     }
 
     private void importCpus() {
@@ -295,6 +288,38 @@ public class DataImportService {
             logger.info("Zaimportowano {} obudów", cases.size());
         } catch (IOException | CsvValidationException e) {
             logger.error("Błąd podczas importowania obudów: {}", e.getMessage());
+        }
+    }
+
+
+    private void importMemory() {
+        logger.info("Importowanie pamięci RAM");
+        Path csvPath = Paths.get(DATA_DIR, "memory.csv");
+        List<Memory> memories = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(csvPath.toFile()))) {
+            String[] header = reader.readNext(); // Skip header
+            String[] line;
+
+            while ((line = reader.readNext()) != null) {
+                Memory memory = new Memory();
+                memory.setName(line[0]);
+                if (line[1].isEmpty()) continue; // Skip if no price
+                memory.setPrice(parseDouble(line[1]));
+                memory.setSpeed(parseDouble(line[2].replace(",", ".")));
+                memory.setModules(parseInt(line[3].split(",")[0])); // Extract number of modules
+                memory.setPricePerGb(parseDouble(line[4]));
+                memory.setColor(line[5]);
+                memory.setFirstWordLatency(parseDouble(line[6]));
+                memory.setCasLatency(parseInt(line[7]));
+
+                memories.add(memory);
+            }
+
+            memoryRepository.saveAll(memories);
+            logger.info("Zaimportowano {} pamięci RAM", memories.size());
+        } catch (IOException | CsvValidationException e) {
+            logger.error("Błąd podczas importowania pamięci RAM: {}", e.getMessage());
         }
     }
 
