@@ -99,35 +99,22 @@ public class DataImportService {
     private void importGpus() {
         logger.info("Importowanie kart graficznych");
         Path csvPath = Paths.get(DATA_DIR, "video-card.csv");
-        logger.debug("Ścieżka do pliku CSV: {}", csvPath.toAbsolutePath());
-        
-        if (!csvPath.toFile().exists()) {
-            logger.error("Plik {} nie istnieje!", csvPath.toAbsolutePath());
-            return;
-        }
-
         List<VideoCard> gpus = new ArrayList<>();
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath.toFile()))) {
             String[] header = reader.readNext(); // Skip header
-            logger.debug("Nagłówki CSV: {}", String.join(", ", header));
-            
             String[] line;
-            int lineNumber = 1;
+            int lineNumber = 0;
             
             while ((line = reader.readNext()) != null) {
                 lineNumber++;
-                logger.debug("Przetwarzanie linii {}: {}", lineNumber, String.join(", ", line));
                 
                 try {
                     if (line.length < 6) {
-                        logger.warn("Pominięto linię {} - za mało kolumn: {}", lineNumber, String.join(", ", line));
                         continue;
                     }
 
-                    // Sprawdzanie czy wymagane pola nie są puste
                     if (line[0].isEmpty() || line[1].isEmpty()) {
-                        logger.warn("Pominięto linię {} - brak nazwy lub ceny: {}", lineNumber, String.join(", ", line));
                         continue;
                     }
 
@@ -141,13 +128,8 @@ public class DataImportService {
                     gpu.setTdp(150); // Default TDP
                     gpu.setBrand(line[0].toUpperCase().contains("RADEON") ? "AMD" : "NVIDIA");
                     
-                    logger.debug("Utworzono obiekt karty graficznej: {}", gpu);
-                    
                     if (gpu.getPrice() > 0 && gpu.getMemory() > 0) {
                         gpus.add(gpu);
-                        logger.debug("Dodano kartę graficzną: {}", gpu.getName());
-                    } else {
-                        logger.warn("Pominięto linię {} - nieprawidłowa cena lub pamięć: {}", lineNumber, String.join(", ", line));
                     }
                 } catch (Exception e) {
                     logger.error("Błąd podczas przetwarzania linii {}: {}", lineNumber, e.getMessage());
@@ -157,12 +139,9 @@ public class DataImportService {
             if (!gpus.isEmpty()) {
                 videoCardRepository.saveAll(gpus);
                 logger.info("Zaimportowano {} kart graficznych", gpus.size());
-            } else {
-                logger.warn("Nie zaimportowano żadnych kart graficznych!");
             }
         } catch (IOException | CsvValidationException e) {
             logger.error("Błąd podczas importowania kart graficznych: {}", e.getMessage());
-            logger.error("Pełny stack trace:", e);
         }
     }
 
@@ -229,27 +208,49 @@ public class DataImportService {
     private void importPowerSupplies() {
         logger.info("Importowanie zasilaczy");
         Path csvPath = Paths.get(DATA_DIR, "power-supply.csv");
+        logger.debug("Ścieżka do pliku CSV: {}", csvPath.toAbsolutePath());
         List<PowerSupply> psus = new ArrayList<>();
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath.toFile()))) {
             String[] header = reader.readNext(); // Skip header
             String[] line;
+            int lineNumber = 0;
             
             while ((line = reader.readNext()) != null) {
-                PowerSupply psu = new PowerSupply();
-                psu.setName(line[0]);
-                if (line[1].isEmpty()) continue; // Skip if no price
-                psu.setPrice(parseDouble(line[1]));
-                psu.setType("ATX");
-                psu.setEfficiency(line[2]);
-                psu.setWattage(parseInt(line[3]));
-                psu.setModular(line[4].toLowerCase().contains("full") || line[4].toLowerCase().contains("semi"));
-                
-                psus.add(psu);
+                lineNumber++;
+                try {
+                    if (line.length < 6) {
+                        logger.warn("Linia {} ma za mało kolumn, pomijam", lineNumber);
+                        continue;
+                    }
+
+                    PowerSupply psu = new PowerSupply();
+                    psu.setName(line[0].trim());
+                    psu.setPrice(parseDouble(line[1]));
+                    psu.setType(line[2].trim());
+                    psu.setEfficiency(line[3].trim());
+                    psu.setWattage(parseInt(line[4]));
+                    psu.setModular(line[5].toLowerCase().contains("full"));
+                    
+                    if (psu.getPrice() > 0 && psu.getWattage() > 0) {
+                        psus.add(psu);
+                        logger.debug("Dodano zasilacz: {} ({}W, {} PLN)", 
+                            psu.getName(), psu.getWattage(), psu.getPrice());
+                    } else {
+                        logger.warn("Pominięto zasilacz z nieprawidłową ceną lub mocą: {} (cena: {}, moc: {}W)", 
+                            psu.getName(), psu.getPrice(), psu.getWattage());
+                    }
+                } catch (Exception e) {
+                    logger.error("Błąd podczas parsowania linii {} zasilacza: {}", lineNumber, e.getMessage());
+                }
             }
             
-            powerSupplyRepository.saveAll(psus);
-            logger.info("Zaimportowano {} zasilaczy", psus.size());
+            if (!psus.isEmpty()) {
+                powerSupplyRepository.saveAll(psus);
+                logger.info("Zaimportowano {} zasilaczy", psus.size());
+            } else {
+                logger.warn("Nie znaleziono żadnych poprawnych zasilaczy do zaimportowania");
+            }
         } catch (IOException | CsvValidationException e) {
             logger.error("Błąd podczas importowania zasilaczy: {}", e.getMessage());
         }
@@ -288,14 +289,12 @@ public class DataImportService {
             return 0.0;
         }
         try {
-            // Usuwamy wszystkie znaki oprócz cyfr, kropki i przecinka
             String cleaned = value.replaceAll("[^\\d.,]", "").replace(",", ".");
             if (cleaned.isEmpty()) {
                 return 0.0;
             }
             return Double.parseDouble(cleaned);
         } catch (NumberFormatException e) {
-            logger.warn("Nie udało się sparsować wartości '{}' na liczbę", value);
             return 0.0;
         }
     }
@@ -305,14 +304,12 @@ public class DataImportService {
             return 0;
         }
         try {
-            // Usuwamy wszystkie znaki oprócz cyfr
             String cleaned = value.replaceAll("[^\\d]", "");
             if (cleaned.isEmpty()) {
                 return 0;
             }
             return Integer.parseInt(cleaned);
         } catch (NumberFormatException e) {
-            logger.warn("Nie udało się sparsować wartości '{}' na liczbę całkowitą", value);
             return 0;
         }
     }
