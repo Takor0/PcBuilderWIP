@@ -105,16 +105,18 @@ public class DataImportService {
             String[] header = reader.readNext(); // Skip header
             String[] line;
             int lineNumber = 0;
-            
+
             while ((line = reader.readNext()) != null) {
                 lineNumber++;
-                
+
                 try {
                     if (line.length < 6) {
+                        logger.warn("Pominięto linię {}: zbyt mało danych", lineNumber);
                         continue;
                     }
 
                     if (line[0].isEmpty() || line[1].isEmpty()) {
+                        logger.warn("Pominięto linię {}: brak nazwy lub ceny", lineNumber);
                         continue;
                     }
 
@@ -126,8 +128,17 @@ public class DataImportService {
                     gpu.setCoreClock(parseDouble(line[4]));
                     gpu.setBoostClock(parseDouble(line[5]));
                     gpu.setTdp(150); // Default TDP
-                    gpu.setBrand(line[0].toUpperCase().contains("RADEON") ? "AMD" : "NVIDIA");
-                    
+
+                    String chipset = gpu.getChipset().toLowerCase();
+                    if (chipset.contains("radeon")) {
+                        gpu.setBrand("AMD");
+                    } else if (chipset.contains("geforce") || chipset.contains("rtx")) {
+                        gpu.setBrand("NVIDIA");
+                    } else {
+                        gpu.setBrand("UNKNOWN");
+                        logger.warn("Nie rozpoznano marki dla chipsetu: {} w linii {}", chipset, lineNumber);
+                    }
+
                     if (gpu.getPrice() > 0 && gpu.getMemory() > 0) {
                         gpus.add(gpu);
                     }
@@ -135,15 +146,18 @@ public class DataImportService {
                     logger.error("Błąd podczas przetwarzania linii {}: {}", lineNumber, e.getMessage());
                 }
             }
-            
+
             if (!gpus.isEmpty()) {
                 videoCardRepository.saveAll(gpus);
                 logger.info("Zaimportowano {} kart graficznych", gpus.size());
+            } else {
+                logger.info("Nie zaimportowano żadnych kart graficznych");
             }
         } catch (IOException | CsvValidationException e) {
             logger.error("Błąd podczas importowania kart graficznych: {}", e.getMessage());
         }
     }
+
 
     private void importMotherboards() {
         logger.info("Importowanie płyt głównych");
