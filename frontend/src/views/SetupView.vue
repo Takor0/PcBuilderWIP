@@ -34,8 +34,9 @@ export default {
         {label: 'Budżet', value: 1, title: 'budget'},
         {label: 'Wymagania', value: 2, title: 'req'},
         {label: 'Zastosowanie', value: 3, title: 'appliance'},
-        {label: 'Wymagania', value: 4, title: 'requirements'},
-        {label: 'Zestawy', value: 5, title: 'sets'},
+        {label: 'Priorytet', value: 4, title: 'priority'},
+        {label: 'Wymagania dodatkowe', value: 5, title: 'requirements'},
+        {label: 'Zestawy', value: 6, title: 'sets'},
       ]
     }
   },

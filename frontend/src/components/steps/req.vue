@@ -23,7 +23,7 @@ import stepMixin from "@/mixins/stepMixin";
 import { CpuPreference, GpuPreference } from "@/services/setService";
 
 export default {
-  name: "RequirementsStep",
+  name: "ReqStep",
   mixins: [stepMixin],
   components: {
     Select
