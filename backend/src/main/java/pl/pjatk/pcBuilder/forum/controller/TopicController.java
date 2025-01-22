@@ -11,6 +11,7 @@ import pl.pjatk.pcBuilder.user.service.AuthService;
 
 @RestController
 @RequestMapping("/api/forum/topic")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class TopicController {
     private final TopicService topicService;

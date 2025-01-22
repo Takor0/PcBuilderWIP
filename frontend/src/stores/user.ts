@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import { User } from 'src/services/users';
+import type { UserInterface } from '@/services/user';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
-        user: null as User | null,
+        user: null as UserInterface | null,
     }),
     actions: {
-        set(user: User) {
+        set(user: UserInterface) {
             this.user = user
         },
         clear() {

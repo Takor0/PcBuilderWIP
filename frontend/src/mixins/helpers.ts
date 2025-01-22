@@ -1,8 +1,14 @@
+import {User} from '@/services/user';
 export default {
-    data(): { isDarkMode: boolean } {
+    data(): { user: boolean, isDarkMode: boolean } {
         return {
+            user: null,
             isDarkMode: localStorage.getItem('theme') === 'dark'
         }
+    },
+    async mounted() {
+        const user = new User()
+        this.user = await user.get();
     },
     methods: {
         setMode(isDarkMode: boolean) {

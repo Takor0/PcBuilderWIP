@@ -1,26 +1,49 @@
-import { request } from 'src/utils/request';
-import { BASE_URL } from 'src/config';
-import { ActiveUser } from 'src/services/user';
+import {request} from '@/utils/request';
+import {BASE_URL} from '@/constants/common';
+import {User} from '@/services/user';
 
 export const AUTH_ENDPOINTS = {
-    login: `${BASE_URL}auth/jwt/login`,
+    login: `${BASE_URL}api/auth/login`,
+    register: `${BASE_URL}api/users/register`,
     logout: `${BASE_URL}auth/jwt/logout`,
     me: `${BASE_URL}user/me`,
 };
 
 class Auth {
-    async login({username, password}: { username: string; password: string }) {
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
+    async login(username: string, password: string) {
         const {data, res} = await request({
             url: AUTH_ENDPOINTS.login,
             method: 'POST',
-            formData: formData,
+            body: {
+                usernameOrEmail: username,
+                password: password
+            },
         });
-        if (res.status === 204) {
-            await ActiveUser.set();
+        if (res.status === 200) {
+            const user = new User();
+            await user.set(data);
         }
+        return {
+            data,
+            res,
+        };
+    }
+
+    async register(
+        username: string,
+        password: string,
+        email: string
+    ) {
+        const {data, res} = await request({
+            url: AUTH_ENDPOINTS.register,
+            method: 'POST',
+            body: {
+                username: username,
+                password: password,
+                email: email,
+                isVerified: true,
+            },
+        });
         return {
             data,
             res,

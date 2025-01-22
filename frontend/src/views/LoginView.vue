@@ -5,6 +5,7 @@ import InputText from "primevue/inputtext";
 import Button from "primevue/button"
 import { Form } from '@primevue/forms';
 import Message from 'primevue/message';
+import AuthService from '@/services/auth';
 
 export default {
   name: 'LoginView',
@@ -13,8 +14,12 @@ export default {
   data() {
     return {
       isLogin: true,
+      password: "",
+      email: "",
+      username: "",
       initialValues: {
         password: "",
+        email: "",
         username: "",
       },
     }
@@ -28,24 +33,30 @@ export default {
     }
   },
   methods: {
-    resolver({ values }) {
-      console.log(values)
-      const errors = { username: [] };
-
-      if (!values.username) {
-        errors.username.push({ type: 'required', message: 'Username is required.' });
-      }
-
-      if (values.username?.length < 3) {
-        errors.username.push({ type: 'minimum', message: 'Username must be at least 3 characters long.' });
-      }
-
-      return {
-        errors
-      };
+    switchMode() {
+      this.password = ""
+      this.email = ""
+      this.username = ""
+      this.isLogin = !this.isLogin
     },
-    onFormSubmit({valid}) {
-      console.log(valid)
+    async handleLogin() {
+      const {data, res} = await AuthService.login(this.username, this.password)
+      if (res.status == 200) {
+        this.$router.push({name: 'setup'})
+      } else {
+        alert("Wystąpił błąd podczas logowania, sprwadź czy podałeś poprawne dane i użytkownik został zweryfikowany")
+      }
+    },
+    async handleRegister() {
+      await AuthService.register(this.username, this.password, this.email)
+    },
+    async onFormSubmit() {
+      if (this.isLogin) {
+        await this.handleLogin()
+      } else {
+        await this.handleRegister()
+        this.switchMode()
+      }
     }
   }
 
@@ -56,13 +67,14 @@ export default {
 
 <template>
   <div class="h-25rem flex">
-    <Form :resolver="resolver" :initialValues @submit="onFormSubmit" class="mt-auto align-items-center gap-3 flex flex-column" style="width: 100%">
-      <InputText required name="username" placeholder="Login"/>
-      <Password required :feedback="false" name="password" placeholder="Hasło"/>
+    <Form  @submit="onFormSubmit" class="mt-auto align-items-center gap-3 flex flex-column" style="width: 100%">
+      <InputText v-model="username" required name="username" placeholder="Login"/>
+      <InputText v-if="!isLogin" v-model="email" required name="E-mail" placeholder="E-mail"/>
+      <Password v-model="password" required :feedback="false" name="password" placeholder="Hasło"/>
       <Button style="max-width: 219px; width: 100%" type="submit" severity="secondary" :label="submitLabel"/>
       <Button
         style="max-width: 260px; width: 100%"
-        @click="isLogin = !isLogin"
+        @click="switchMode"
         :label="switchModeLabel"
         variant="text"
       />

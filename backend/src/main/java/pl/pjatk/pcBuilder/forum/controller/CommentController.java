@@ -11,6 +11,7 @@ import pl.pjatk.pcBuilder.user.service.AuthService;
 
 @RestController
 @RequestMapping("/api/forum/comment")
+@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
