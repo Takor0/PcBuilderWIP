@@ -7,18 +7,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.pjatk.pcBuilder.forum.dto.CommentCreateRequest;
 import pl.pjatk.pcBuilder.forum.service.CommentService;
+import pl.pjatk.pcBuilder.user.service.AuthService;
 
 @RestController
 @RequestMapping("/api/forum/comment")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
-
+    private final AuthService authService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createComment(@RequestBody CommentCreateRequest comment) {
+    public ResponseEntity<?> createComment(@RequestBody CommentCreateRequest commentRequest,
+                                           @RequestHeader(value = "Authorization", required = false) String authHeader,
+                                           @CookieValue(value = "auth-token", required = false) String cookieToken) {
         try {
-            return ResponseEntity.ok(commentService.createComment(comment));
+            String token;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.replace("Bearer ", "");
+            } else if (cookieToken != null) {
+                token = cookieToken;
+            } else {
+                throw new RuntimeException("Token nie został dostarczony");
+            }
+
+            String username = authService.validateToken(token);
+
+            return ResponseEntity.ok(commentService.createComment(commentRequest, username));
         } catch (RuntimeException e) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
@@ -26,9 +40,23 @@ public class CommentController {
         }
     }
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteComment(@PathVariable Long id) {
+    public ResponseEntity<?> deleteComment(@PathVariable Long id,
+                                           @RequestHeader(value = "Authorization", required = false) String authHeader,
+                                           @CookieValue(value = "auth-token", required = false) String cookieToken) {
         try {
-            commentService.deleteComment(id);
+
+            String token;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.replace("Bearer ", "");
+            } else if (cookieToken != null) {
+                token = cookieToken;
+            } else {
+                throw new RuntimeException("Token nie został dostarczony");
+            }
+
+            String username = authService.validateToken(token);
+
+            commentService.deleteComment(id, username);
             return ResponseEntity.ok("Comment by id: "+ id +"deleted");
         } catch (RuntimeException e) {
             return ResponseEntity
