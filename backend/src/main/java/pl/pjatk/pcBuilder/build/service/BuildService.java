@@ -541,8 +541,14 @@ public class BuildService {
     }
 
     public Build saveBuild(BuildConfiguration buildConfiguration, User user) {
+        if (user == null) {
+            logger.error("Użytkownik jest null w saveBuild");
+            throw new IllegalArgumentException("Użytkownik nie może być null");
+        }
+
         Build build = new Build();
         build.setUser(user);
+        logger.info("Użytkownik w saveBuild: " + user.getUsername());
         build.setBuildConfiguration(buildConfiguration.toString());
         build.setCreatedAt(LocalDateTime.now());
         return buildRepository.save(build);

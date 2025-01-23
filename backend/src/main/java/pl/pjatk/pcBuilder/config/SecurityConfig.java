@@ -34,8 +34,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/login", "/api/users/test", "/api/users/register",
-                                "/api/users/{id}/verify", "/api/builds/generate","/api/forum/topic",
-                                "/api/forum/comment")
+                                "/api/users/{id}/verify", "/api/forum/topic", "/api/forum/comment")
                         .permitAll()
                         .anyRequest().authenticated()
                 )
