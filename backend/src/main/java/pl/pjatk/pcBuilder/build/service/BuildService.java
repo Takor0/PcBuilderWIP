@@ -16,22 +16,12 @@ import lombok.RequiredArgsConstructor;
 import pl.pjatk.pcBuilder.build.model.BudgetAllocation;
 import pl.pjatk.pcBuilder.build.model.BuildConfiguration;
 import pl.pjatk.pcBuilder.build.model.BuildRequest;
-import pl.pjatk.pcBuilder.build.model.components.Cpu;
-import pl.pjatk.pcBuilder.build.model.components.HardDrive;
-import pl.pjatk.pcBuilder.build.model.components.Motherboard;
-import pl.pjatk.pcBuilder.build.model.components.PcCase;
-import pl.pjatk.pcBuilder.build.model.components.PowerSupply;
-import pl.pjatk.pcBuilder.build.model.components.VideoCard;
+import pl.pjatk.pcBuilder.build.model.components.*;
 import pl.pjatk.pcBuilder.build.model.enums.BuildType;
 import pl.pjatk.pcBuilder.build.model.enums.CpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.ComputerUsage;
-import pl.pjatk.pcBuilder.build.repository.CpuRepository;
-import pl.pjatk.pcBuilder.build.repository.HardDriveRepository;
-import pl.pjatk.pcBuilder.build.repository.MotherboardRepository;
-import pl.pjatk.pcBuilder.build.repository.PcCaseRepository;
-import pl.pjatk.pcBuilder.build.repository.PowerSupplyRepository;
-import pl.pjatk.pcBuilder.build.repository.VideoCardRepository;
+import pl.pjatk.pcBuilder.build.repository.*;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +30,7 @@ public class BuildService {
     private final CpuRepository cpuRepository;
     private final VideoCardRepository videoCardRepository;
     private final MotherboardRepository motherboardRepository;
+    private final MemoryRepository memoryRepository;
     private final HardDriveRepository hardDriveRepository;
     private final PowerSupplyRepository powerSupplyRepository;
     private final PcCaseRepository pcCaseRepository;
@@ -47,10 +38,9 @@ public class BuildService {
 
     public BuildConfiguration generateBuildConfiguration(BuildRequest request) {
         logger.info("Rozpoczynam generowanie konfiguracji dla budżetu: {}", request.getBudget());
-        logger.info("Preferencje: CPU={}, GPU={}, Użycie={}, Priorytet={}", 
-            request.getCpuPreference(), request.getGpuPreference(), 
-            request.getUsage(), request.getPriority());
-
+        logger.info("Preferencje: CPU={}, GPU={}, Użycie={}, Priorytet={}",
+                request.getCpuPreference(), request.getGpuPreference(),
+                request.getUsage(), request.getPriority());
         double remainingBudget = request.getBudget();
         BuildType buildType = determineBuildType(request.getBudget());
         logger.info("Określony typ buildu: {}", buildType);
@@ -65,8 +55,8 @@ public class BuildService {
         logger.info("Wybrany CPU: {} ({})", selectedCpu.getName(), selectedCpu.getPrice());
         remainingBudget -= selectedCpu.getPrice();
 
-        // Teraz GPU - tutaj wrzucamy najwięcej kasy, 40% z pozostałego budżetu
-        double gpuBudget = remainingBudget * 0.4;
+        // Teraz GPU - tutaj wrzucamy najwięcej kasy, 35% z pozostałego budżetu
+        double gpuBudget = remainingBudget * 0.35;
         logger.info("Budżet na GPU: {}", gpuBudget);
         VideoCard selectedGpu = selectGpu(request, gpuBudget, buildType);
         if (selectedGpu.getPrice() <= 0) {
@@ -85,15 +75,25 @@ public class BuildService {
         logger.info("Wybrana płyta główna: {} ({})", selectedMotherboard.getName(), selectedMotherboard.getPrice());
         remainingBudget -= selectedMotherboard.getPrice();
 
-        // Alokacja maksymalnie 15% budżetu na dyski
-        double storageBudget = Math.min(remainingBudget, remainingBudget * 0.15);
+        // Alokacja maksymalnie 10% budżetu na dyski
+        double storageBudget = Math.min(remainingBudget, remainingBudget * 0.10);
         logger.info("Budżet na dyski: {}", storageBudget);
         List<HardDrive> selectedStorage = selectStorage(request, storageBudget);
         double storagePrice = selectedStorage.stream().mapToDouble(HardDrive::getPrice).sum();
-        logger.info("Wybrane dyski: {} (łącznie: {})", 
-            selectedStorage.stream().map(HardDrive::getName).collect(Collectors.joining(", ")), 
-            storagePrice);
+        logger.info("Wybrane dyski: {} (łącznie: {})",
+                selectedStorage.stream().map(HardDrive::getName).collect(Collectors.joining(", ")),
+                storagePrice);
         remainingBudget -= storagePrice;
+
+        // Pamięć RAM z budżetem 10%
+        double memoryBudget = Math.min(remainingBudget, remainingBudget * 0.15);
+        logger.info("Budżet na pamięć RAM: {}", memoryBudget);
+        List<Memory> selectedMemory = selectMemory(request, selectedMotherboard, memoryBudget); // Przekazujemy selectedMotherboard
+        double memoryPrice = selectedMemory.stream().mapToDouble(Memory::getPrice).sum();
+        logger.info("Wybrana pamięć RAM: {} (łącznie: {})",
+                selectedMemory.stream().map(Memory::getName).collect(Collectors.joining(", ")),
+                memoryPrice);
+        remainingBudget -= memoryPrice;
 
         // Zasilacz
         logger.info("Budżet na zasilacz: {}", remainingBudget);
@@ -112,23 +112,24 @@ public class BuildService {
 
         // Generowanie szczegółowych opisów komponentów
         Map<String, String> componentDescriptions = generateComponentDescriptions(
-            selectedCpu, selectedGpu, selectedMotherboard, selectedStorage, selectedPsu, selectedCase);
+                selectedCpu, selectedGpu, selectedMotherboard, selectedStorage, selectedPsu, selectedCase);
 
-        double totalPrice = calculateTotalPrice(selectedCpu, selectedGpu, selectedMotherboard, 
-                                             selectedStorage, selectedPsu, selectedCase);
+        double totalPrice = calculateTotalPrice(selectedCpu, selectedGpu, selectedMotherboard,
+                selectedStorage, selectedPsu, selectedCase);
         logger.info("Całkowita cena zestawu: {}", totalPrice);
 
         return BuildConfiguration.builder()
-            .cpu(selectedCpu)
-            .gpu(selectedGpu)
-            .motherboard(selectedMotherboard)
-            .storage(selectedStorage)
-            .powerSupply(selectedPsu)
-            .pcCase(selectedCase)
-            .totalPrice(totalPrice)
-            .performanceScores(performanceScores)
-            .componentDescriptions(componentDescriptions)
-            .build();
+                .cpu(selectedCpu)
+                .gpu(selectedGpu)
+                .motherboard(selectedMotherboard)
+                .storage(selectedStorage)
+                .memory(selectedMemory)
+                .powerSupply(selectedPsu)
+                .pcCase(selectedCase)
+                .totalPrice(totalPrice)
+                .performanceScores(performanceScores)
+                .componentDescriptions(componentDescriptions)
+                .build();
     }
 
     private BuildType determineBuildType(double budget) {
@@ -184,30 +185,33 @@ public class BuildService {
 
     private BudgetAllocation allocateBudget(double totalBudget, BuildType buildType) {
         double cpuPercentage, gpuPercentage, motherboardPercentage, 
-               storagePercentage, powerSupplyPercentage, casePercentage;
+               storagePercentage, powerSupplyPercentage, casePercentage, memoryPercentage;
         
         switch (buildType) {
             case HIGH_END:
-                cpuPercentage = 0.30;
-                gpuPercentage = 0.35;
+                cpuPercentage = 0.25;
+                gpuPercentage = 0.30;
                 motherboardPercentage = 0.15;
+                memoryPercentage = 0.10;
                 storagePercentage = 0.10;
                 powerSupplyPercentage = 0.05;
                 casePercentage = 0.05;
                 break;
             case BALANCED:
                 cpuPercentage = 0.25;
-                gpuPercentage = 0.30;
-                motherboardPercentage = 0.20;
+                gpuPercentage = 0.25;
+                motherboardPercentage = 0.15;
+                memoryPercentage = 0.10;
                 storagePercentage = 0.12;
                 powerSupplyPercentage = 0.08;
                 casePercentage = 0.05;
                 break;
             case BUDGET:
                 cpuPercentage = 0.25;
-                gpuPercentage = 0.25;
+                gpuPercentage = 0.20;
                 motherboardPercentage = 0.20;
-                storagePercentage = 0.15;
+                memoryPercentage = 0.10;
+                storagePercentage = 0.10;
                 powerSupplyPercentage = 0.10;
                 casePercentage = 0.05;
                 break;
@@ -221,7 +225,9 @@ public class BuildService {
             totalBudget * motherboardPercentage,
             totalBudget * storagePercentage,
             totalBudget * powerSupplyPercentage,
-            totalBudget * casePercentage
+            totalBudget * casePercentage,
+                totalBudget * memoryPercentage
+
         );
     }
 
@@ -440,6 +446,40 @@ public class BuildService {
         return selectedCase;
     }
 
+    private List<Memory> selectMemory(BuildRequest request, Motherboard motherboard, double budget) {
+        logger.info("Szukam pamięci RAM w budżecie: {}", budget);
+        
+        List<Memory> availableMemory = memoryRepository.findAll().stream()
+                .filter(memory -> memory.getPrice() > 0 && memory.getPrice() <= budget)
+                .collect(Collectors.toList());
+
+        logger.info("Znaleziono {} modułów pamięci RAM w budżecie", availableMemory.size());
+
+        if (availableMemory.isEmpty()) {
+            throw new RuntimeException("Nie znaleziono pamięci RAM w podanym budżecie");
+        }
+
+        List<Memory> compatibleMemory = availableMemory.stream()
+                .filter(memory -> memory.getSpeed() <= motherboard.getMaxMemorySpeed()) // Prędkość pamięci <= maksymalna prędkość płyty
+                .collect(Collectors.toList());
+
+        logger.info("Po filtrowaniu przez kompatybilność zostało {} modułów pamięci RAM", compatibleMemory.size());
+
+        if (compatibleMemory.isEmpty()) {
+            throw new RuntimeException("Nie znaleziono kompatybilnej pamięci RAM");
+        }
+
+        Memory selectedMemory = compatibleMemory.stream()
+                .max(Comparator.comparingDouble(memory -> componentScorer.calculateScore(memory, request))) // Wybierz najlepszy moduł
+                .orElseThrow(() -> new RuntimeException("Nie znaleziono odpowiedniej pamięci RAM"));
+
+        double totalMemoryPrice = selectedMemory.getPrice();
+        logger.info("Wybrana pamięć RAM: {} (cena: {} PLN)",
+                selectedMemory.getName(), totalMemoryPrice);
+
+        return List.of(selectedMemory);
+    }
+
     private boolean isCompatibleFormFactor(String caseFormFactor, String motherboardFormFactor) {
         // Konwertuj na małe litery dla porównania
         caseFormFactor = caseFormFactor.toLowerCase();
@@ -479,7 +519,7 @@ public class BuildService {
         int gamingScore = (int) ((gpu.getMemory() * gpu.getBoostClock() * 0.6) + 
                                 (cpu.getCoreCount() * cpu.getBoostClock() * 0.4));
         scores.put("gaming", gamingScore);
-        
+
         // Ocena wydajności w zastosowaniach profesjonalnych
         int workstationScore = (int) ((cpu.getCoreCount() * cpu.getBoostClock() * 0.7) + 
                                      (gpu.getMemory() * gpu.getBoostClock() * 0.3));

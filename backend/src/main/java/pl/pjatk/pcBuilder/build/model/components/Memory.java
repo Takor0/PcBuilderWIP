@@ -23,8 +23,8 @@ public class Memory {
     private double price;
     private double speed;
     private int modules;
+    private int capacity;
     private double pricePerGb;
-    private String color;
     private double firstWordLatency;
     private int casLatency;
 }

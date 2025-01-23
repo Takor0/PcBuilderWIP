@@ -7,12 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import pl.pjatk.pcBuilder.build.model.components.Cpu;
-import pl.pjatk.pcBuilder.build.model.components.HardDrive;
-import pl.pjatk.pcBuilder.build.model.components.Motherboard;
-import pl.pjatk.pcBuilder.build.model.components.PcCase;
-import pl.pjatk.pcBuilder.build.model.components.PowerSupply;
-import pl.pjatk.pcBuilder.build.model.components.VideoCard;
+import pl.pjatk.pcBuilder.build.model.components.*;
 
 @Data
 @Builder
@@ -22,6 +17,7 @@ public class BuildConfiguration {
     private Cpu cpu;
     private VideoCard gpu;
     private Motherboard motherboard;
+    private List<Memory> memory;
     private List<HardDrive> storage;
     private PowerSupply powerSupply;
     private PcCase pcCase;

@@ -298,18 +298,18 @@ public class DataImportService {
         List<Memory> memories = new ArrayList<>();
 
         try (CSVReader reader = new CSVReader(new FileReader(csvPath.toFile()))) {
-            String[] header = reader.readNext(); // Skip header
+            String[] header = reader.readNext();
             String[] line;
 
             while ((line = reader.readNext()) != null) {
                 Memory memory = new Memory();
                 memory.setName(line[0]);
-                if (line[1].isEmpty()) continue; // Skip if no price
+                if (line[1].isEmpty()) continue;
                 memory.setPrice(parseDouble(line[1]));
                 memory.setSpeed(parseDouble(line[2].replace(",", ".")));
-                memory.setModules(parseInt(line[3].split(",")[0])); // Extract number of modules
+                memory.setModules(parseInt(line[3].split(",")[0]));
+                memory.setCapacity(parseInt(line[3].split(",")[1]));
                 memory.setPricePerGb(parseDouble(line[4]));
-                memory.setColor(line[5]);
                 memory.setFirstWordLatency(parseDouble(line[6]));
                 memory.setCasLatency(parseInt(line[7]));
 
