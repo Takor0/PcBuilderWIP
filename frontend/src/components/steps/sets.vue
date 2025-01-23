@@ -74,7 +74,7 @@ export default {
       this.isSpecDialog = true
     },
     async generateSet() {
-      this.result = await setService.generate(this.setupStore.getRequest())
+      this.result = await setService.generate(this.setupStore.getRequest(this.setupStore.result))
     },
   },
   watch: {
@@ -83,7 +83,7 @@ export default {
     }
   },
   async mounted() {
-    this.result = await setService.generate(this.setupStore.getRequest())
+    this.generateSet()
     console.log("Generated result:", this.result);  // Debugging result
   }
 }

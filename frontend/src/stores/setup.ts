@@ -10,15 +10,15 @@ export const useSetupStore = defineStore('setup', {
         return { result: {} as { [key: string]: Result } }
     },
     actions: {
-        getRequest() {
+        getRequest(result) {
             let payload
             payload = {
-                budget: this.result['budget'] || 5000,
-                cpuPreference: this.result?.requirements?.['cpuPreference'] || 'NO_PREFERENCE',
-                gpuPreference: this.result?.requirements?.['gpuPreference'] || 'NO_PREFERENCE',
-                usage: this.result?.['appliance'] || 'GAMING_AAA',
-                priority: this.result?.requirements?.['priority'] || 'BALANCED',
-                requirements: this.result?.requirements?.['requirements'] || []
+                budget: result['budget'] || 5000,
+                cpuPreference: result?.req?.['cpuPreference'] || 'NO_PREFERENCE',
+                gpuPreference: result?.req?.['gpuPreference'] || 'NO_PREFERENCE',
+                usage: result?.['appliance'] || 'GAMING_AAA',
+                priority: result?.requirements?.['priority'] || 'BALANCED',
+                requirements: result?.requirements?.['requirements'] || []
             }
             return payload
         },
