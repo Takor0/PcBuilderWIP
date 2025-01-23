@@ -1,9 +1,8 @@
 export const PARTS = {
     CPU: "cpu",
-    VIDEO_CARD: "videoCard",
+    VIDEO_CARD: "gpu",
     MOTHERBOARD: "motherboard",
-    HARD_DRIVE: "hardDrive",
-    ADDITIONAL_DRIVE: "additional_drive",
+    HARD_DRIVE: "storage",
     POWER_SUPPLY: "powerSupply",
     PC_CASE: "pcCase",
 }

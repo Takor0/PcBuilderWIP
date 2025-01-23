@@ -18,7 +18,12 @@
           :header="HEADINGS[part]"
       >
         <template #body="{data, index, field}">
-          {{ data[part] }}
+          <span v-if="Array.isArray(data[part])">
+            {{ data[part].map(part => part.name).join(", ") }}
+          </span>
+          <span v-else>
+            {{ data[part]?.name }}
+          </span>
           <Button v-if="data[part]" @click="displayPartSpec(index, field)" size="small" icon="pi pi-search"></Button>
         </template>
       </Column>
@@ -56,18 +61,7 @@ export default {
   },
   computed: {
     data() {
-      return this.result.map(set => {
-        const setParts = set.components
-        const row = {name: set.name, totalPrice: set.totalPrice}
-        for (const part of Object.values(PARTS)) {
-          if (!setParts[part]) {
-            row[part] = ""
-            continue
-          }
-          row[part] = setParts[part].name
-        }
-        return row
-      })
+      return [this.result]
     }
   },
   methods: {
@@ -76,20 +70,21 @@ export default {
       await setService.saveSet(set.index)
     },
     displayPartSpec(index, field) {
-      this.currentSpec = this.result[index].components[field]
+      this.currentSpec = this.result[field]
       this.isSpecDialog = true
     },
     async generateSet() {
-      this.result = await setService.generate(this.setupStore.getRequest())
+      this.result = await setService.generate(this.setupStore.getRequest(this.setupStore.result))
     },
   },
   watch: {
     "$route.query.step"(val) {
-      if (val === "4") this.generateSet()
+      if (val === "6") this.generateSet()
     }
   },
   async mounted() {
-    this.result = await setService.generate(this.setupStore.getRequest())
+    this.generateSet()
+    console.log("Generated result:", this.result);  // Debugging result
   }
 }
 </script>
