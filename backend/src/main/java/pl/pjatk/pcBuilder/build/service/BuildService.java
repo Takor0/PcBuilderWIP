@@ -1,5 +1,6 @@
 package pl.pjatk.pcBuilder.build.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import pl.pjatk.pcBuilder.build.model.BudgetAllocation;
+import pl.pjatk.pcBuilder.build.model.Build;
 import pl.pjatk.pcBuilder.build.model.BuildConfiguration;
 import pl.pjatk.pcBuilder.build.model.BuildRequest;
 import pl.pjatk.pcBuilder.build.model.components.*;
@@ -22,6 +24,7 @@ import pl.pjatk.pcBuilder.build.model.enums.CpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.ComputerUsage;
 import pl.pjatk.pcBuilder.build.repository.*;
+import pl.pjatk.pcBuilder.user.model.User;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +38,7 @@ public class BuildService {
     private final PowerSupplyRepository powerSupplyRepository;
     private final PcCaseRepository pcCaseRepository;
     private final ComponentScorer componentScorer;
+    private final BuildRepository buildRepository;
 
     public BuildConfiguration generateBuildConfiguration(BuildRequest request) {
         logger.info("Rozpoczynam generowanie konfiguracji dla budżetu: {}", request.getBudget());
@@ -534,5 +538,13 @@ public class BuildService {
         int basePower = 100; // Dla innych komponentów
         int totalPower = cpuPower + gpuPower + basePower;
         return (int) (totalPower * 1.5); // 50% zapasu
+    }
+
+    public Build saveBuild(BuildConfiguration buildConfiguration, User user) {
+        Build build = new Build();
+        build.setUser(user);
+        build.setBuildConfiguration(buildConfiguration.toString());
+        build.setCreatedAt(LocalDateTime.now());
+        return buildRepository.save(build);
     }
 } 

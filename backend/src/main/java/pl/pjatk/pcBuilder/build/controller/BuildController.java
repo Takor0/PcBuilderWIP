@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import pl.pjatk.pcBuilder.build.model.BuildConfiguration;
 import pl.pjatk.pcBuilder.build.model.BuildRequest;
 import pl.pjatk.pcBuilder.build.service.BuildService;
+import pl.pjatk.pcBuilder.user.model.User;
 
 @RestController
 @RequestMapping("/api/builds")
@@ -18,16 +20,18 @@ public class BuildController {
     private static final Logger logger = LoggerFactory.getLogger(BuildController.class);
 
     @PostMapping("/generate")
-    public ResponseEntity<?> generateBuild(@RequestBody BuildRequest request) {
+    public ResponseEntity<?> generateBuild(@RequestBody BuildRequest request, @AuthenticationPrincipal User user) {
         try {
             if (request.getBudget() <= 0) {
                 return ResponseEntity.badRequest().body(new ErrorResponse("Budżet musi być większy od 0"));
             }
             
             BuildConfiguration config = buildService.generateBuildConfiguration(request);
+
+            buildService.saveBuild(config, user);
+
             return ResponseEntity.ok(config);
         } catch (Exception e) {
-            logger.error("Błąd podczas generowania konfiguracji: {}", e.getMessage());
             return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
         }
     }
@@ -43,4 +47,4 @@ public class BuildController {
             return message;
         }
     }
-} 
+}
