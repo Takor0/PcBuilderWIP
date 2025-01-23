@@ -32,9 +32,11 @@ export default {
       currentStep: parseInt(this.$route.query?.step || 1),
       steps: [
         {label: 'Budżet', value: 1, title: 'budget'},
-        {label: 'Zastosowanie', value: 2, title: 'appliance'},
-        {label: 'Wymagania', value: 3, title: 'requirements'},
-        {label: 'Zestawy', value: 4, title: 'sets'},
+        {label: 'Wymagania', value: 2, title: 'req'},
+        {label: 'Zastosowanie', value: 3, title: 'appliance'},
+        {label: 'Priorytet', value: 4, title: 'priority'},
+        {label: 'Wymagania dodatkowe', value: 5, title: 'requirements'},
+        {label: 'Zestawy', value: 6, title: 'sets'},
       ]
     }
   },
