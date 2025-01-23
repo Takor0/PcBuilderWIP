@@ -84,7 +84,7 @@ public class TopicService {
             throw new RuntimeException("Nie masz uprawnień do usunięcia tego tematu.");
         }
 
-        topicRepository.deleteById(id);
+        topicRepository.delete(topic);
         logger.info("Usunięto temat o id: {}", id);
     }
 
