@@ -75,14 +75,19 @@ public class CommentService {
     @Transactional
     public void deleteComment(Long id, String username) {
         logger.info("Usuwanie komentarza o id: {}", id);
-        Comment comment = commentRepository.findById(id).orElse(null);
-        if (comment == null) {
-            logger.warn("Nie znaleziono komentarza o id: {}", id);
-            throw new RuntimeException("Nie znaleziono komentarza " + id);
+
+        Comment comment = commentRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.warn("Nie znaleziono komentarza o id: {}", id);
+                    return new RuntimeException("Nie znaleziono komentarza, id " + id);
+                });
+
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("Nie znaleziono użytkownika: " + username);
         }
 
-        User user = comment.getUser();
-        if (!user.getUsername().equals(username)) {
+        if (!user.getIsAdmin() && !comment.getUser().getUsername().equals(username)) {
             logger.warn("Użytkownik {} nie ma uprawnień do usunięcia komentarza o id: {}", username, id);
             throw new RuntimeException("Nie masz uprawnień do usunięcia tego komentarza.");
         }
