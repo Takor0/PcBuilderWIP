@@ -38,7 +38,7 @@ public class User {
     private Boolean isAdmin = false;
 
     @Column(name = "failedLoginAttempts")
-    private int failedLoginAttempts = 0;
+    private Integer failedLoginAttempts = 0;
 
     @Column(name = "accountLockedUntil")
     private LocalDateTime accountLockedUntil;
