@@ -448,7 +448,7 @@ public class BuildService {
 
     private List<Memory> selectMemory(BuildRequest request, Motherboard motherboard, double budget) {
         logger.info("Szukam pamięci RAM w budżecie: {}", budget);
-        
+
         List<Memory> availableMemory = memoryRepository.findAll().stream()
                 .filter(memory -> memory.getPrice() > 0 && memory.getPrice() <= budget)
                 .collect(Collectors.toList());
