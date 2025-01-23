@@ -9,6 +9,7 @@ import pl.pjatk.pcBuilder.config.JwtUtil;
 import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,6 +21,9 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final Set<String> invalidatedTokens = new HashSet<>();
+
+    private static final int MAX_FAILED_LOGIN_ATTEMPTS = 3;
+    private static final int ACCOUNT_LOCK_TIME_MINUTES = 5;
 
     public User registerUser(User user) {
         logger.info("Próba rejestracji użytkownika: {}", user.getUsername());
@@ -69,6 +73,7 @@ public class AuthService {
         return verifiedUser;
     }
 
+
     public String loginWithToken(String usernameOrEmail, String rawPassword) {
         logger.info("Próba logowania użytkownika: {}", usernameOrEmail);
 
@@ -77,10 +82,32 @@ public class AuthService {
             user = userRepository.findByEmail(usernameOrEmail);
         }
 
-        if (user == null || !passwordEncoder.matches(rawPassword, user.getPassword())) {
+        if (user == null) {
             logger.warn("Nieprawidłowe dane logowania dla: {}", usernameOrEmail);
             throw new RuntimeException("Nieprawidłowe dane logowania");
         }
+
+        if (user.getAccountLockedUntil() != null && user.getAccountLockedUntil().isAfter(LocalDateTime.now())) {
+            logger.warn("Konto użytkownika {} jest zablokowane do {}", user.getUsername(), user.getAccountLockedUntil());
+            throw new RuntimeException("Konto jest zablokowane. Spróbuj ponownie później.");
+        }
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            user.setFailedLoginAttempts(user.getFailedLoginAttempts() + 1);
+            logger.warn("Nieprawidłowe hasło dla użytkownika: {}", usernameOrEmail);
+
+            if (user.getFailedLoginAttempts() >= MAX_FAILED_LOGIN_ATTEMPTS) {
+                user.setAccountLockedUntil(LocalDateTime.now().plusMinutes(ACCOUNT_LOCK_TIME_MINUTES));
+                logger.warn("Konto użytkownika {} zostało zablokowane do {}", user.getUsername(), user.getAccountLockedUntil());
+            }
+
+            userRepository.save(user);
+            throw new RuntimeException("Nieprawidłowe dane logowania");
+        }
+
+        user.setFailedLoginAttempts(0);
+        user.setAccountLockedUntil(null);
+        userRepository.save(user);
 
         if (!user.getIsVerified()) {
             logger.warn("Użytkownik {} nie został zweryfikowany", usernameOrEmail);

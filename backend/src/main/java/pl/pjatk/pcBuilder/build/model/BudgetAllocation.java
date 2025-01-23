@@ -14,4 +14,5 @@ public class BudgetAllocation {
     private double storageBudget;
     private double powerSupplyBudget;
     private double caseBudget;
+    private double memoryBudget;
 } 

@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "User")
 @Data
@@ -34,4 +36,10 @@ public class User {
 
     @Column(name = "isAdmin")
     private Boolean isAdmin = false;
+
+    @Column(name = "failedLoginAttempts")
+    private int failedLoginAttempts = 0;
+
+    @Column(name = "accountLockedUntil")
+    private LocalDateTime accountLockedUntil;
 }

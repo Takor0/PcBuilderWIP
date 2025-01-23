@@ -4,11 +4,7 @@ import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
 import pl.pjatk.pcBuilder.build.model.BuildRequest;
-import pl.pjatk.pcBuilder.build.model.components.Cpu;
-import pl.pjatk.pcBuilder.build.model.components.Motherboard;
-import pl.pjatk.pcBuilder.build.model.components.PcCase;
-import pl.pjatk.pcBuilder.build.model.components.PowerSupply;
-import pl.pjatk.pcBuilder.build.model.components.VideoCard;
+import pl.pjatk.pcBuilder.build.model.components.*;
 import pl.pjatk.pcBuilder.build.model.enums.ComputerUsage;
 import pl.pjatk.pcBuilder.build.model.enums.CpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
@@ -94,6 +90,23 @@ public class ComponentScorer {
             return psu.getEfficiency().contains("Gold") ? 1.0 : 0.5;
         } else if (component instanceof PcCase) {
             return 0.5; // Neutralna ocena dla obudowy
+        } else if (component instanceof Memory){
+            Memory memory = (Memory) component;
+            switch (usage) {
+                case GAMING_AAA:
+                case GAMING_ESPORT:
+                    return (memory.getSpeed() * 0.6 + memory.getCapacity() / memory.getModules()) / 5000.0;
+                case PROGRAMMING:
+                case GRAPHICS_RENDERING:
+                    return memory.getCapacity() * 0.7 + memory.getSpeed() * 0.3 / 64.0;
+                case OFFICE_WORK:
+                    return memory.getCapacity() * 0.7 / 16.0;
+                case STREAMING:
+                    return memory.getCapacity() * 0.5 + memory.getSpeed() * 0.5 / 64.0;
+                default:
+                    return 0.0;
+            }
+
         }
         return 0.0;
     }
@@ -108,6 +121,10 @@ public class ComponentScorer {
         } else if (component instanceof PowerSupply) {
             PowerSupply psu = (PowerSupply) component;
             return psu.getWattage() / psu.getPrice();
+        } else if (component instanceof Memory) {
+            Memory memory = (Memory) component;
+            return (memory.getCapacity() * memory.getSpeed()) / memory.getPrice() * 5000.0;
+
         }
         return 0.5; // Neutralna ocena dla pozostałych komponentów
     }
@@ -128,4 +145,5 @@ public class ComponentScorer {
         }
         return 0.5; // Neutralna ocena dla pozostałych komponentów
     }
+
 } 
