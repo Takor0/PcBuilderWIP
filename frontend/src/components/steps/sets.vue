@@ -79,11 +79,12 @@ export default {
   },
   watch: {
     "$route.query.step"(val) {
-      if (val === "4") this.generateSet()
+      if (val === "6") this.generateSet()
     }
   },
   async mounted() {
     this.result = await setService.generate(this.setupStore.getRequest())
+    console.log("Generated result:", this.result);  // Debugging result
   }
 }
 </script>
