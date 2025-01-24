@@ -1,0 +1,27 @@
+# Application Configuration
+spring.application.name=pcBuilder
+
+# Database Configuration
+spring.datasource.url=jdbc:mysql://mysql:3306/PCBuilderBackend?useSSL=false&allowPublicKeyRetrieval=true
+spring.datasource.username=
+# password empty yes
+spring.datasource.password=
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+
+# JPA/Hibernate Configuration
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.open-in-view=false
+
+# Data Import Configuration
+spring.jpa.defer-datasource-initialization=true
+spring.sql.init.mode=always
+
+# Logging Configuration
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.show_sql=false
+spring.jpa.properties.hibernate.format_sql=false
+logging.level.org.hibernate.SQL=OFF
+logging.level.org.hibernate.type.descriptor.sql=OFF
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=OFF
+logging.level.pl.pjatk.pcBuilder=DEBUG 
