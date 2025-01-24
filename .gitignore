@@ -62,3 +62,10 @@ backend/!**/src/test/**/build/
 
 backend/### VS Code ###
 backend/.vscode/
+
+# Root directory
+node_modules/
+.idea/
+.env
+*.iml
+.DS_Store
