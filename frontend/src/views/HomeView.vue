@@ -1,21 +1,11 @@
 <script lang="ts">
-
-
 export default {
-  name: 'HomeView',
-  components: {},
-  data() {
-    return {}
-  },
-
+  name: 'HomeView'
 }
-
 </script>
-
 
 <template>
   <div>
-home
   </div>
 </template>
 

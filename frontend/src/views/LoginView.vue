@@ -8,11 +8,12 @@ import Message from 'primevue/message';
 import AuthService from '@/services/auth';
 import { request } from '@/utils/request';
 import { BASE_URL } from '@/constants/common';
+import HomeButton from '@/components/navigation/HomeButton.vue';
 
 export default {
   name: 'LoginView',
   // eslint-disable-next-line vue/no-reserved-component-names
-  components: {Message, Form, Button, Password, InputText},
+  components: {Message, Form, Button, Password, InputText, HomeButton},
   data() {
     return {
       isLogin: true,
@@ -89,6 +90,7 @@ export default {
 
 <template>
   <div class="h-25rem flex">
+    <HomeButton />
     <Form  @submit="onFormSubmit" class="mt-auto align-items-center gap-3 flex flex-column" style="width: 100%">
       <InputText v-model="username" required name="username" placeholder="Login"/>
       <InputText v-if="!isLogin" v-model="email" required name="E-mail" placeholder="E-mail"/>

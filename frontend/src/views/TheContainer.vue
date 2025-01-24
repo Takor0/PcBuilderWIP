@@ -2,10 +2,15 @@
 import Button from 'primevue/button'
 import Menu from 'primevue/menu'
 import { useUserStore } from '@/stores/user'
+import HomeButton from '@/components/navigation/HomeButton.vue'
 
 export default {
   name: 'TheContainer',
-  components: {Menu, Button},
+  components: {
+    HomeButton,
+    Menu,
+    Button
+  },
   methods: {
     toggle(event) {
       this.$refs.menu.toggle(event);
@@ -46,8 +51,9 @@ export default {
 
 <template>
   <div>
-    <header>
-      <span class="flex flex-row align-content-center ">
+    <HomeButton />
+    <header class="p-3">
+      <span class="flex flex-row align-items-center gap-2 ml-5">
         <Button @click="$router.push({name:'setup', query: {clear: true}})">
           Nowy
         </Button>
@@ -59,12 +65,13 @@ export default {
         </Button>
         <div class="ml-auto">
           <Button @click="toggle" aria-haspopup="true" aria-controls="profile_menu" icon="pi pi-user"/>
-          <Menu ref="menu" id="profile_menu" :model="profileMenuItems" :popup="true">
-          </Menu>
+          <Menu ref="menu" id="profile_menu" :model="profileMenuItems" :popup="true"/>
         </div>
-        </span>
+      </span>
     </header>
-    <router-view/>
+    <main class="p-3">
+      <router-view/>
+    </main>
   </div>
 </template>
 
