@@ -54,10 +54,10 @@ export default {
     <HomeButton />
     <header class="p-3">
       <span class="flex flex-row align-items-center gap-2 ml-5">
-        <Button @click="$router.push({name:'setup', query: {clear: true}})">
+        <Button @click="$router.push({name:'setup', query: {clear: true}})" :disabled="!isUserLoggedIn">
           Nowy
         </Button>
-        <Button @click="$router.push({name:'forum'})">
+        <Button @click="$router.push({name:'forum'})" :disabled="!isUserLoggedIn">
           Forum
         </Button>
         <div class="ml-auto">
