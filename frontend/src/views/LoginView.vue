@@ -6,6 +6,8 @@ import Button from "primevue/button"
 import { Form } from '@primevue/forms';
 import Message from 'primevue/message';
 import AuthService from '@/services/auth';
+import { request } from '@/utils/request';
+import { BASE_URL } from '@/constants/common';
 
 export default {
   name: 'LoginView',
@@ -48,7 +50,27 @@ export default {
       }
     },
     async handleRegister() {
-      await AuthService.register(this.username, this.password, this.email)
+      try {
+        const {data, res} = await AuthService.register(this.username, this.password, this.email)
+        if (res.status === 200 && data.id) {
+          // Automatyczna weryfikacja po rejestracji
+          const verifyRes = await request({
+            url: `${BASE_URL}api/users/${data.id}/verify`,
+            method: 'PUT'
+          });
+          if (verifyRes.res.status === 200) {
+            alert("Rejestracja zakończona sukcesem. Możesz się teraz zalogować.");
+            this.switchMode();
+          } else {
+            alert("Rejestracja udana, ale wystąpił problem z weryfikacją konta. Spróbuj się zalogować lub skontaktuj z administratorem.");
+          }
+        } else {
+          alert("Wystąpił błąd podczas rejestracji. Spróbuj ponownie.");
+        }
+      } catch (error) {
+        alert("Wystąpił błąd podczas rejestracji. Spróbuj ponownie później.");
+        console.error(error);
+      }
     },
     async onFormSubmit() {
       if (this.isLogin) {
