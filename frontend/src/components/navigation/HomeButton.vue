@@ -1,6 +1,6 @@
 <template>
   <Button
-    class="fixed top-4 left-2 z-5"
+    :style="{ position: 'fixed', top: '20px', left: '8px', zIndex: 5 }"
     icon="pi pi-home"
     rounded
     text
