@@ -12,7 +12,6 @@ import pl.pjatk.pcBuilder.user.service.AuthService;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AuthController {
 

@@ -14,7 +14,7 @@ export const request = async ({
 }) => {
     const options: RequestInit = {
         method,
-        // credentials: 'include',
+        credentials: 'include',
     };
     const headers: HeadersInit = {};
     const jsonMethods = ['POST', 'PUT', 'PATCH', 'DELETE'];
