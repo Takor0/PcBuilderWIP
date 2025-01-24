@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 27, 2024 at 03:45 PM
--- Wersja serwera: 10.4.32-MariaDB
--- Wersja PHP: 8.2.12
+-- Generation Time: Jan 09, 2025 at 01:42 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `build`
+-- Table structure for table `build`
 --
 
 CREATE TABLE `build` (
@@ -42,7 +42,21 @@ CREATE TABLE `build` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `cpu`
+-- Table structure for table `comment`
+--
+
+CREATE TABLE `comment` (
+  `id` bigint(20) NOT NULL,
+  `content` varchar(500) NOT NULL,
+  `date_of_creation` datetime(6) DEFAULT NULL,
+  `post_id` bigint(20) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cpu`
 --
 
 CREATE TABLE `cpu` (
@@ -60,7 +74,7 @@ CREATE TABLE `cpu` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `harddrive`
+-- Table structure for table `harddrive`
 --
 
 CREATE TABLE `harddrive` (
@@ -76,7 +90,7 @@ CREATE TABLE `harddrive` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `motherboard`
+-- Table structure for table `motherboard`
 --
 
 CREATE TABLE `motherboard` (
@@ -92,7 +106,7 @@ CREATE TABLE `motherboard` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `pccase`
+-- Table structure for table `pccase`
 --
 
 CREATE TABLE `pccase` (
@@ -105,7 +119,22 @@ CREATE TABLE `pccase` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `powersupply`
+-- Table structure for table `topic`
+--
+
+CREATE TABLE `topic` (
+  `id` bigint(20) NOT NULL,
+  `content` varchar(2000) NOT NULL,
+  `date_of_creation` datetime(6) DEFAULT NULL,
+  `link` varchar(255) DEFAULT NULL,
+  `title` varchar(255) NOT NULL,
+  `user_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `powersupply`
 --
 
 CREATE TABLE `powersupply` (
@@ -121,7 +150,7 @@ CREATE TABLE `powersupply` (
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `user`
+-- Table structure for table `user`
 --
 
 CREATE TABLE `user` (
@@ -129,13 +158,14 @@ CREATE TABLE `user` (
   `username` varchar(50) NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `isVerified` tinyint(1) DEFAULT 0
+  `isVerified` tinyint(1) DEFAULT 0,
+  `is_verified` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `videocard`
+-- Table structure for table `videocard`
 --
 
 CREATE TABLE `videocard` (
@@ -150,11 +180,11 @@ CREATE TABLE `videocard` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indeksy dla zrzutów tabel
+-- Indexes for dumped tables
 --
 
 --
--- Indeksy dla tabeli `build`
+-- Indexes for table `build`
 --
 ALTER TABLE `build`
   ADD PRIMARY KEY (`id`),
@@ -167,37 +197,52 @@ ALTER TABLE `build`
   ADD KEY `case_id` (`case_id`);
 
 --
--- Indeksy dla tabeli `cpu`
+-- Indexes for table `comment`
+--
+ALTER TABLE `comment`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `post_id` (`post_id`,`user_id`),
+  ADD KEY `comment_user_id_fk` (`user_id`);
+
+--
+-- Indexes for table `cpu`
 --
 ALTER TABLE `cpu`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeksy dla tabeli `harddrive`
+-- Indexes for table `harddrive`
 --
 ALTER TABLE `harddrive`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeksy dla tabeli `motherboard`
+-- Indexes for table `motherboard`
 --
 ALTER TABLE `motherboard`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeksy dla tabeli `pccase`
+-- Indexes for table `pccase`
 --
 ALTER TABLE `pccase`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeksy dla tabeli `powersupply`
+-- Indexes for table `topic`
+--
+ALTER TABLE `topic`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `post_user_id_fk` (`user_id`);
+
+--
+-- Indexes for table `powersupply`
 --
 ALTER TABLE `powersupply`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeksy dla tabeli `user`
+-- Indexes for table `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`id`),
@@ -205,7 +250,7 @@ ALTER TABLE `user`
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indeksy dla tabeli `videocard`
+-- Indexes for table `videocard`
 --
 ALTER TABLE `videocard`
   ADD PRIMARY KEY (`id`);
@@ -219,6 +264,12 @@ ALTER TABLE `videocard`
 --
 ALTER TABLE `build`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `comment`
+--
+ALTER TABLE `comment`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `cpu`
@@ -243,6 +294,12 @@ ALTER TABLE `motherboard`
 --
 ALTER TABLE `pccase`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `topic`
+--
+ALTER TABLE `topic`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `powersupply`
@@ -277,6 +334,19 @@ ALTER TABLE `build`
   ADD CONSTRAINT `build_ibfk_5` FOREIGN KEY (`hard_drive_id`) REFERENCES `harddrive` (`id`),
   ADD CONSTRAINT `build_ibfk_6` FOREIGN KEY (`power_supply_id`) REFERENCES `powersupply` (`id`),
   ADD CONSTRAINT `build_ibfk_7` FOREIGN KEY (`case_id`) REFERENCES `pccase` (`id`);
+
+--
+-- Constraints for table `comment`
+--
+ALTER TABLE `comment`
+  ADD CONSTRAINT `comment_post_id_fk` FOREIGN KEY (`post_id`) REFERENCES `topic` (`id`),
+  ADD CONSTRAINT `comment_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
+
+--
+-- Constraints for table `topic`
+--
+ALTER TABLE `topic`
+  ADD CONSTRAINT `post_user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

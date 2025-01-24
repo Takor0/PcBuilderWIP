@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import pl.pjatk.pcBuilder.build.model.enums.GpuPreference;
 import pl.pjatk.pcBuilder.build.model.enums.ComputerUsage;
 import pl.pjatk.pcBuilder.build.repository.*;
 import pl.pjatk.pcBuilder.user.model.User;
+import pl.pjatk.pcBuilder.user.repository.UserRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +36,7 @@ public class BuildService {
     private final PcCaseRepository pcCaseRepository;
     private final ComponentScorer componentScorer;
     private final BuildRepository buildRepository;
+    private final UserRepository userRepository;
 
     public BuildConfiguration generateBuildConfiguration(BuildRequest request) {
         logger.info("Rozpoczynam generowanie konfiguracji dla budżetu: {}", request.getBudget());
@@ -535,18 +538,80 @@ public class BuildService {
         int totalPower = cpuPower + gpuPower + basePower;
         return (int) (totalPower * 1.5); // 50% zapasu
     }
-
+    @Transactional
     public Build saveBuild(BuildConfiguration buildConfiguration, User user) {
         if (user == null) {
             logger.error("Użytkownik jest null w saveBuild");
             throw new IllegalArgumentException("Użytkownik nie może być null");
         }
 
+        if (buildConfiguration == null) {
+            logger.error("BuildConfiguration jest null w saveBuild");
+            throw new IllegalArgumentException("Konfiguracja builda nie może być null");
+        }
+
+        if (buildConfiguration.getCpu() == null) {
+            throw new IllegalArgumentException("Procesor CPU musi być podany");
+        }
+        if (buildConfiguration.getGpu() == null) {
+            throw new IllegalArgumentException("Karta graficzna GPU musi być podana");
+        }
+        if (buildConfiguration.getMotherboard() == null) {
+            throw new IllegalArgumentException("Płyta główna musi być podana");
+        }
+        if (buildConfiguration.getMemory() == null || buildConfiguration.getMemory().isEmpty()) {
+            throw new IllegalArgumentException("Pamięć RAM musi być podana");
+        }
+        if (buildConfiguration.getStorage() == null || buildConfiguration.getStorage().isEmpty()) {
+            throw new IllegalArgumentException("Dysk (storage) musi być podany");
+        }
+        if (buildConfiguration.getPowerSupply() == null) {
+            throw new IllegalArgumentException("Zasilacz musi być podany");
+        }
+        if (buildConfiguration.getPcCase() == null) {
+            throw new IllegalArgumentException("Obudowa musi być podana");
+        }
+
         Build build = new Build();
         build.setUser(user);
-        logger.info("Użytkownik w saveBuild: " + user.getUsername());
-        build.setBuildConfiguration(buildConfiguration.toString());
         build.setCreatedAt(LocalDateTime.now());
+
+        // Fetch existing components (replace detached entities with managed ones)
+        Cpu managedCpu = cpuRepository.findById(buildConfiguration.getCpu().getId()).orElseThrow();
+        VideoCard managedGpu = videoCardRepository.findById(buildConfiguration.getGpu().getId()).orElseThrow();
+        Motherboard managedMotherboard = motherboardRepository.findById(buildConfiguration.getMotherboard().getId()).orElseThrow();
+        PowerSupply managedPowerSupply = powerSupplyRepository.findById(buildConfiguration.getPowerSupply().getId()).orElseThrow();
+        PcCase managedPcCase = pcCaseRepository.findById(buildConfiguration.getPcCase().getId()).orElseThrow();
+
+        // Fetch Memory and Storage entities
+        List<Memory> managedMemory = buildConfiguration.getMemory().stream()
+                .map(m -> memoryRepository.findById(m.getId()).orElseThrow())
+                .collect(Collectors.toList());
+
+        List<HardDrive> managedStorage = buildConfiguration.getStorage().stream()
+                .map(s -> hardDriveRepository.findById(s.getId()).orElseThrow())
+                .collect(Collectors.toList());
+
+
+        build.setCpu(managedCpu);
+        build.setGpu(managedGpu);
+        build.setMotherboard(managedMotherboard);
+        build.setMemory(managedMemory);
+        build.setStorage(managedStorage);
+        build.setPowerSupply(managedPowerSupply);
+        build.setPcCase(managedPcCase);
+
         return buildRepository.save(build);
+    }
+
+    @Transactional
+    public List<Build> getBuildsByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with username: " + username);
+        }
+        List<Build> builds = buildRepository.findByUserId(user.getId());
+
+        return builds;
     }
 } 

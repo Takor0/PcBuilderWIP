@@ -30,6 +30,7 @@ public class DataImportService {
     private final PowerSupplyRepository powerSupplyRepository;
     private final PcCaseRepository pcCaseRepository;
     private final MemoryRepository memoryRepository;
+    private final BuildRepository buildRepository;
 
     private static final String DATA_DIR = "data-staging/csv/";
 
@@ -49,6 +50,7 @@ public class DataImportService {
 
     private void clearAllTables() {
         logger.info("Czyszczenie tabel przed importem");
+        buildRepository.deleteAll();
         pcCaseRepository.deleteAll();
         powerSupplyRepository.deleteAll();
         hardDriveRepository.deleteAll();

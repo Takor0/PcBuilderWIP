@@ -1,6 +1,7 @@
 package pl.pjatk.pcBuilder.build.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +13,11 @@ import pl.pjatk.pcBuilder.build.model.BuildRequest;
 import pl.pjatk.pcBuilder.build.service.BuildService;
 import pl.pjatk.pcBuilder.user.model.User;
 import pl.pjatk.pcBuilder.user.service.AuthService;
-
+import pl.pjatk.pcBuilder.build.model.Build;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -111,4 +113,47 @@ public class BuildController {
             return message;
         }
     }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getUserBuilds(
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
+            @CookieValue(value = "auth-token", required = false) String cookieToken) {
+
+        try {
+            String token = null;
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.replace("Bearer ", "");
+            } else if (cookieToken != null) {
+                token = cookieToken;
+            }
+            if (token == null) {
+                logger.error("No token provided");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Authentication required"));
+            }
+            String username = authService.validateToken(token);
+            if (username == null) {
+                logger.error("Invalid or expired token");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("Invalid or expired token"));
+            }
+            User user = authService.findByUsername(username);
+            if (user == null) {
+                logger.error("User not found for username: {}", username);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse("User not found"));
+            }
+            if (!user.getIsVerified()) {
+                logger.warn("User {} is not verified", username);
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("User not verified"));
+            }
+
+            List<Build> config = buildService.getBuildsByUsername(username);
+
+            return ResponseEntity.ok(config);
+
+        } catch (Exception e) {
+            logger.error("Error fetching builds for user: ", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ErrorResponse("Error retrieving builds"));
+        }
+    }
+
 }
