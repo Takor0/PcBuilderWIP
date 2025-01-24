@@ -5,15 +5,13 @@
       <template v-if="req.type === 'buttons'">
         <label class="block font-bold mb-1">{{ req.label }}</label>
         <div class="flex gap-2">
-          <button
+          <Button
               v-for="option in req.options"
               :key="option.value"
-              class="px-4 py-2 border rounded"
-              :class="{'bg-blue-500 text-white': result[req.value] === option.value, 'bg-gray-200': result[req.value] !== option.value}"
+              :label="option.label"
+              :severity="result[req.value] === option.value ? 'primary' : 'secondary'"
               @click="() => result[req.value] = option.value"
-          >
-            {{ option.label }}
-          </button>
+          />
         </div>
       </template>
     </div>
@@ -23,9 +21,13 @@
 <script>
 import stepMixin from "@/mixins/stepMixin";
 import { PerformancePriority } from "@/services/setService";
+import Button from 'primevue/button';
 
 export default {
   name: "priorityStep",
+  components: {
+    Button
+  },
   mixins: [stepMixin],
   data() {
     return {
