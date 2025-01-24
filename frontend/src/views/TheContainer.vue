@@ -57,9 +57,6 @@ export default {
         <Button @click="$router.push({name:'setup', query: {clear: true}})">
           Nowy
         </Button>
-        <Button>
-          Zestawy
-        </Button>
         <Button @click="$router.push({name:'forum'})">
           Forum
         </Button>
