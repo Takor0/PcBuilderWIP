@@ -6,11 +6,14 @@ import Button from "primevue/button"
 import { Form } from '@primevue/forms';
 import Message from 'primevue/message';
 import AuthService from '@/services/auth';
+import { request } from '@/utils/request';
+import { BASE_URL } from '@/constants/common';
+import HomeButton from '@/components/navigation/HomeButton.vue';
 
 export default {
   name: 'LoginView',
   // eslint-disable-next-line vue/no-reserved-component-names
-  components: {Message, Form, Button, Password, InputText},
+  components: {Message, Form, Button, Password, InputText, HomeButton},
   data() {
     return {
       isLogin: true,
@@ -48,7 +51,27 @@ export default {
       }
     },
     async handleRegister() {
-      await AuthService.register(this.username, this.password, this.email)
+      try {
+        const {data, res} = await AuthService.register(this.username, this.password, this.email)
+        if (res.status === 200 && data.id) {
+          // Automatyczna weryfikacja po rejestracji
+          const verifyRes = await request({
+            url: `${BASE_URL}api/users/${data.id}/verify`,
+            method: 'PUT'
+          });
+          if (verifyRes.res.status === 200) {
+            alert("Rejestracja zakończona sukcesem. Możesz się teraz zalogować.");
+            this.switchMode();
+          } else {
+            alert("Rejestracja udana, ale wystąpił problem z weryfikacją konta. Spróbuj się zalogować lub skontaktuj z administratorem.");
+          }
+        } else {
+          alert("Wystąpił błąd podczas rejestracji. Spróbuj ponownie.");
+        }
+      } catch (error) {
+        alert("Wystąpił błąd podczas rejestracji. Spróbuj ponownie później.");
+        console.error(error);
+      }
     },
     async onFormSubmit() {
       if (this.isLogin) {
@@ -67,6 +90,7 @@ export default {
 
 <template>
   <div class="h-25rem flex">
+    <HomeButton />
     <Form  @submit="onFormSubmit" class="mt-auto align-items-center gap-3 flex flex-column" style="width: 100%">
       <InputText v-model="username" required name="username" placeholder="Login"/>
       <InputText v-if="!isLogin" v-model="email" required name="E-mail" placeholder="E-mail"/>

@@ -2,18 +2,24 @@
   <div>
     <h2>{{ topic.title }}</h2>
     <p>{{ topic.content }}</p>
-    <h3>Komentarze</h3>
-    <Button label="Dodaj komentarz" icon="pi pi-plus" @click="showCommentDialog = true" />
+    <div class="flex align-items-center gap-3 mb-3">
+      <h3 class="m-0">Komentarze</h3>
+      <Button label="Dodaj komentarz" icon="pi pi-plus" @click="showCommentDialog = true" />
+    </div>
     <Dialog header="Dodaj komentarz" v-model:visible="showCommentDialog">
       <form @submit.prevent="createComment">
-        <Textarea v-model="newComment.content" placeholder="Napisz komentarz..." rows="4" />
-        <Button type="submit" label="Dodaj komentarz" class="p-button-primary" />
+        <div class="flex flex-column gap-2">
+          <Textarea v-model="newComment.content" placeholder="Napisz komentarz..." rows="4" />
+          <Button type="submit" label="Dodaj komentarz" class="p-button-primary align-self-end" />
+        </div>
       </form>
     </Dialog>
-    <ul>
-      <li v-for="comment in comments" :key="comment.id">
-        {{ comment.content }}
-        <Button icon="pi pi-trash" class="p-button-text" @click="deleteComment(comment.id)" />
+    <ul class="list-none p-0">
+      <li v-for="comment in comments" :key="comment.id" class="mb-3 p-3 surface-100 border-round">
+        <div class="flex align-items-center justify-content-between">
+          <span>{{ comment.content }}</span>
+          <Button icon="pi pi-trash" text severity="danger" @click="deleteComment(comment.id)" />
+        </div>
       </li>
     </ul>
   </div>
@@ -26,6 +32,7 @@ import Dialog from 'primevue/dialog';
 import Textarea from 'primevue/textarea';
 
 export default {
+  name: 'TopicDetails',
   components: {
     Button,
     Dialog,
